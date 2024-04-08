@@ -1,13 +1,15 @@
-package tukano.api.rest;
+package tukano.impl.rest;
 
 import tukano.api.User;
 import tukano.api.java.Users;
+import tukano.api.rest.RestUsers;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RestUsersClass implements RestUsers{
+public class RestUsersClass implements RestUsers {
 
     Map<String, User> userMap = new HashMap<>();
     Users userInterface = new UsersClass();
@@ -48,7 +50,7 @@ public class RestUsersClass implements RestUsers{
 
     @Override
     public List<User> searchUsers(String pattern) {
-        
+
 
         return null;
     }
