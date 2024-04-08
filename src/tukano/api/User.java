@@ -61,4 +61,17 @@ public class User {
 	public String toString() {
 		return "User [userId=" + userId + ", pwd=" + pwd + ", email=" + email + ", displayName=" + displayName + "]";
 	}
+
+	public void updateUser( User other )  {
+		if( other.getEmail() != null )
+			setEmail( other.getEmail() );
+		if( other.getDisplayName() != null )
+			setDisplayName( other.getDisplayName() );
+		if( other.getPwd() != null )
+			setPwd( other.getPwd() );
+	}
+	
+	public User secureCopy() {
+		return new User( getUserId(), "", getEmail(), getDisplayName());			
+	}
 }
