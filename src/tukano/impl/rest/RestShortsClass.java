@@ -56,6 +56,6 @@ public class RestShortsClass implements RestShorts, Serializable {
 
     @Override
     public List<String> getFeed(String userId, String password) {
-        return resultOrThrow(shortServer.getFeed(userId, password).value());
+        return shortServer.getFeed(userId, password).value();
     }
 }
