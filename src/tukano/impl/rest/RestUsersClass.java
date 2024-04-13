@@ -3,55 +3,40 @@ package tukano.impl.rest;
 import tukano.api.User;
 import tukano.api.java.Users;
 import tukano.api.rest.RestUsers;
+import tukano.impl.srv.common.JavaUsers;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 public class RestUsersClass implements RestUsers {
 
-    Map<String, User> userMap = new HashMap<>();
-    Users userInterface = new UsersClass();
+    Users userServer = new JavaUsers();
 
     @Override
     public String createUser(User user) {
-
-        String userID = userInterface.createUser(user).value();
-        userMap.put(userID, user);
-
-        return userID;
+        return userServer.createUser(user).value();
     }
 
     @Override
     public User getUser(String userId, String pwd) {
-        User user = userMap.get(userId);
-
-        if(user.getPwd().equals(pwd))
-            return user;
-
-        return null;
+        return userServer.getUser(userId, pwd).value();
     }
 
     @Override
     public User updateUser(String userId, String pwd, User user) {
-        return null;
+        return userServer.updateUser(userId, pwd, user).value();
     }
 
     @Override
     public User deleteUser(String userId, String pwd) {
-        User user = userMap.get(userId);
-
-        if(user.getPwd().equals(pwd))
-            return userMap.remove(userId);
-
-        return null;
+        return userServer.deleteUser(userId, pwd).value();
     }
 
     @Override
     public List<User> searchUsers(String pattern) {
-
-
-        return null;
+        return userServer.searchUsers(pattern).value();
     }
 }

@@ -3,6 +3,7 @@ package tukano.impl.rest;
 import tukano.api.Short;
 import tukano.api.java.Shorts;
 import tukano.api.rest.RestShorts;
+import tukano.impl.srv.common.JavaShorts;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -11,54 +12,50 @@ import java.util.Map;
 
 public class RestShortsClass implements RestShorts, Serializable {
 
-    Map<String, Short> shortMap = new HashMap<>();
-    Shorts shortInterface = new ShortClass();
+    Shorts shortServer = new JavaShorts();
 
     @Override
     public Short createShort(String userId, String password) {
-
-        //if(userServer.getUser(userdId, password) != null)
-        return (Short) shortInterface.createShort(userId, password);
+        return shortServer.createShort(userId, password).value();
     }
 
     @Override
     public void deleteShort(String shortId, String password) {
-        Short vid = shortMap.get(shortId);
-
+        shortServer.deleteShort(shortId, password);
     }
 
     @Override
     public Short getShort(String shortId) {
-        return null;
+        return shortServer.getShort(shortId).value();
     }
 
     @Override
     public List<String> getShorts(String userId) {
-        return null;
+        return shortServer.getShorts(userId).value();
     }
 
     @Override
     public void follow(String userId1, String userId2, boolean isFollowing, String password) {
-
+        shortServer.follow(userId1, userId2, isFollowing, password);
     }
 
     @Override
     public List<String> followers(String userId, String password) {
-        return null;
+        return shortServer.followers(userId, password).value();
     }
 
     @Override
     public void like(String shortId, String userId, boolean isLiked, String password) {
-
+        shortServer.like(shortId, userId, isLiked, password);
     }
 
     @Override
     public List<String> likes(String shortId, String password) {
-        return null;
+        return shortServer.likes(shortId, password).value();
     }
 
     @Override
     public List<String> getFeed(String userId, String password) {
-        return null;
+        return resultOrThrow(shortServer.getFeed(userId, password).value());
     }
 }
