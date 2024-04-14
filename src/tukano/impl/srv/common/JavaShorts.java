@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
 import tukano.api.Short;
 import tukano.api.service.util.Result;
@@ -28,7 +27,7 @@ public class JavaShorts implements tukano.api.java.Shorts {
     }
 
     @Override
-    public tukano.api.java.Result<Void> deleteShort(String shortId, String password) {
+    public Result<Void> deleteShort(String shortId, String password) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'deleteShort'");
     }
