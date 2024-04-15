@@ -6,7 +6,7 @@ import tukano.api.User;
 import tukano.api.java.Users;
 import tukano.api.rest.RestUsers;
 import tukano.api.service.util.Result;
-import tukano.impl.srv.common.JavaUsers;
+import tukano.impl.srv.java.JavaUsers;
 
 import java.util.List;
 import java.util.logging.Logger;

@@ -2,13 +2,12 @@ package tukano.impl.rest;
 
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
 import tukano.api.Short;
 import tukano.api.java.Shorts;
 import tukano.api.rest.RestShorts;
 import tukano.api.service.util.Result;
-import tukano.impl.srv.common.JavaShorts;
-import tukano.impl.srv.common.JavaUsers;
+import tukano.impl.srv.java.JavaShorts;
+import tukano.impl.srv.java.JavaUsers;
 
 
 import java.io.Serializable;

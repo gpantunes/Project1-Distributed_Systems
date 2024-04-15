@@ -1,11 +1,6 @@
-package tukano.impl.srv.common;
+package tukano.impl.srv.java;
 
-import static tukano.api.service.util.Result.error;
 import static tukano.api.service.util.Result.ok;
-import static tukano.api.service.util.Result.ErrorCode.BAD_REQUEST;
-import static tukano.api.service.util.Result.ErrorCode.CONFLICT;
-import static tukano.api.service.util.Result.ErrorCode.FORBIDDEN;
-import static tukano.api.service.util.Result.ErrorCode.NOT_FOUND;
 
 import java.util.List;
 import java.util.Map;
