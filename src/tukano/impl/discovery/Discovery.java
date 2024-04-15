@@ -1,7 +1,6 @@
 package tukano.impl.discovery;
 
-
-import tp1.impl.utils.Sleep;
+import tukano.impl.utils.Sleep;
 
 import java.io.IOException;
 import java.net.*;
@@ -69,13 +68,6 @@ public class Discovery {
 			}
 		}).start();
 	}
-
-	/**
-	 * Listens for the given composite service name, blocks until a minimum number of replies is collected.
-	 * @param serviceName - the composite name of the service
-	 * @param minRepliesNeeded - the minimum number of replies required.
-	 * @return the discovery results as an array
-	 */
 	
 	public void listener() {
 		Log.info(String.format("Starting discovery on multicast group: %s, port: %d\n", DISCOVERY_ADDR.getAddress(), DISCOVERY_ADDR.getPort()));
