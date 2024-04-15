@@ -8,11 +8,8 @@ import static tukano.api.service.util.Result.ErrorCode.FORBIDDEN;
 import static tukano.api.service.util.Result.ErrorCode.NOT_FOUND;
 
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
 import tukano.api.User;
 import tukano.api.service.util.Result;

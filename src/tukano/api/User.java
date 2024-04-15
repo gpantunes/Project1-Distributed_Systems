@@ -1,11 +1,16 @@
 package tukano.api;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class User {
 	
 	private String pwd;
 	private String email;
 	private String userId;
 	private String displayName;
+	private Map<String, Short> likedShorts;
+	private Map<String, User> followedUsers;
 
 	public User() {}
 	
@@ -14,6 +19,8 @@ public class User {
 		this.email = email;
 		this.userId = userId;
 		this.displayName = displayName;
+		this.likedShorts = new ConcurrentHashMap<>();
+		this.followedUsers = new ConcurrentHashMap<>();
 	}
 
 	public String getUserId() {

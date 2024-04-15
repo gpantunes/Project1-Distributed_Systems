@@ -1,5 +1,7 @@
 package tukano.impl.srv.java;
 
+import static tukano.api.service.util.Result.ErrorCode.BAD_REQUEST;
+import static tukano.api.service.util.Result.error;
 import static tukano.api.service.util.Result.ok;
 
 import java.util.List;
@@ -9,6 +11,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import tukano.api.Short;
+import tukano.api.User;
 import tukano.api.service.util.Result;
 
 public class JavaShorts implements tukano.api.java.Shorts {
@@ -16,9 +19,13 @@ public class JavaShorts implements tukano.api.java.Shorts {
 	final ExecutorService executor = Executors.newCachedThreadPool();
 
     @Override
-    public tukano.api.java.Result<Short> createShort(String userId, String password) {
+    public Result<Short> createShort(String userId, String password) {
+
+        User user =
+
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'createShort'");
+
+        return ok();
     }
 
     @Override
@@ -76,5 +83,15 @@ public class JavaShorts implements tukano.api.java.Shorts {
 	private boolean badShort(Short sh) {
 		return sh == null || badParam(sh.getShortId()) || badParam(sh.getBlobUrl())
 				|| badParam(sh.getOwnerId());
-	}    
+	}
+
+    private boolean badUser(User user) {
+        return user == null || badParam(user.getEmail()) || badParam(user.getDisplayName())
+                || badParam(user.getPwd());
+    }
+
+    private boolean wrongPassword(User user, String password) {
+        return !user.getPwd().equals(password);
+    }
+
 }
