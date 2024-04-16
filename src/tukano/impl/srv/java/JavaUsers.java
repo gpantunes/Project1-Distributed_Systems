@@ -8,8 +8,10 @@ import static tukano.api.service.util.Result.ErrorCode.FORBIDDEN;
 import static tukano.api.service.util.Result.ErrorCode.NOT_FOUND;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 
 import tukano.api.User;
 import tukano.api.service.util.Result;
@@ -18,6 +20,8 @@ import tukano.impl.Hibernate;
 public class JavaUsers implements tukano.api.java.Users {
 	final ExecutorService executor = Executors.newCachedThreadPool();
 
+	private static Logger Log = Logger.getLogger(JavaUsers.class.getName());
+
 	@Override
 	public Result<String> createUser(User user) {
 		if (badUser(user))
@@ -25,7 +29,7 @@ public class JavaUsers implements tukano.api.java.Users {
 
 		var userId = user.getUserId();
 
-		if (Hibernate.getInstance().sql("SELECT * FROM User WHERE userId = '" + userId + "'", User.class).isEmpty())
+		if (!Hibernate.getInstance().sql("SELECT * FROM User WHERE userId = '" + userId + "'", User.class).isEmpty())
 			return error(CONFLICT);
 
 		Hibernate.getInstance().persist(user);
@@ -63,13 +67,18 @@ public class JavaUsers implements tukano.api.java.Users {
 
 		User oldUser = userList.get(0);
 
-		if (badParam(pwd) || wrongPassword(user, pwd))
+		if(user.getUserId() != null)
+			return error(BAD_REQUEST);
+
+		Log.info("(" + oldUser.getUserId() + ", " + oldUser.getPwd() + ", "
+				+ oldUser.getEmail() + ", " + oldUser.getDisplayName() + ")");
+
+		if (badParam(pwd) || wrongPassword(oldUser, pwd))
 			return error(FORBIDDEN);
 
-
-		if(!oldUser.getPwd().equals(user.getPwd())) oldUser.setPwd(user.getPwd());
-		if(!oldUser.getEmail().equals(user.getEmail())) oldUser.setEmail(user.getEmail());
-		if(!oldUser.getDisplayName().equals(user.getDisplayName())) oldUser.setDisplayName(user.getDisplayName());
+		oldUser.setPwd(Objects.requireNonNullElse(user.getPwd(), oldUser.getPwd()));
+		oldUser.setEmail(Objects.requireNonNullElse(user.getEmail(), oldUser.getEmail()));
+		oldUser.setDisplayName(Objects.requireNonNullElse(user.getDisplayName(), oldUser.getDisplayName()));
 
 		Hibernate.getInstance().update(oldUser);
 
@@ -84,7 +93,7 @@ public class JavaUsers implements tukano.api.java.Users {
 		var userList = Hibernate.getInstance().sql("SELECT * FROM User WHERE userId = '" + userId + "'", User.class);
 
 		if(userList.isEmpty())
-			return error(CONFLICT);
+			return error(NOT_FOUND);
 
 		User user = userList.get(0);
 
@@ -103,7 +112,9 @@ public class JavaUsers implements tukano.api.java.Users {
 		if (badParam(pattern))
 			return error(BAD_REQUEST);
 
-		var hits = Hibernate.getInstance().sql("SELECT * FROM User WHERE userId LIKE  = '%" + pattern + "%'", User.class);
+		pattern = pattern.toLowerCase();
+
+		var hits = Hibernate.getInstance().sql("SELECT * FROM User WHERE LOWER(userId) LIKE '%" + pattern + "%'", User.class);
 
 		/*var hits = users.values()
 				.stream()

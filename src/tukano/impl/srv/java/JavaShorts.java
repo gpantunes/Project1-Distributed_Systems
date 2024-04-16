@@ -87,9 +87,10 @@ public class JavaShorts implements tukano.api.java.Shorts {
         //pedido rest com getUser(userId1, password)
         //User user1 = getUser(userId1);
 
+        int followNum = Hibernate.getInstance().sql("SELECT * FROM Follow", Follow.class).size();
 
         if(isFollowing){
-            Hibernate.getInstance().persist(new Follow(userId1, userId2));
+            Hibernate.getInstance().persist(new Follow(followNum, userId1, userId2));
         } else {
             var follow = Hibernate.getInstance().sql("SELECT * FROM Follow WHERE followerId = '"
                     + userId1  + "' AND followedId = '" + userId2 + "'", Follow.class);
