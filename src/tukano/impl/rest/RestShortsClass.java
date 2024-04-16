@@ -45,14 +45,14 @@ public class RestShortsClass implements RestShorts, Serializable {
     public List<String> getShorts(String userId) {
         Log.info(String.format("REST get shorts " + userId));
 
-        return checkResult(shortServer.getShort(userId));
+        return (List<String>) checkResult(shortServer.getShort(userId));
     }
 
     @Override
     public void follow(String userId1, String userId2, boolean isFollowing, String password) {
         Log.info(String.format("REST follow " + userId1 + " " + userId2));
 
-        return checkResult(shortServer.follow(userId1, userId2, isFollowing, password));
+        //return checkResult(shortServer.follow(userId1, userId2, isFollowing, password));
     }
 
     @Override
@@ -66,7 +66,7 @@ public class RestShortsClass implements RestShorts, Serializable {
     public void like(String shortId, String userId, boolean isLiked, String password) {
         Log.info(String.format("REST like short " + shortId + " " + userId));
 
-        return checkResult(shortServer.like(shortId, userId, isLiked, password));
+        //return checkResult(shortServer.like(shortId, userId, isLiked, password));
     }
 
     @Override

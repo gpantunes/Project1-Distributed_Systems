@@ -114,6 +114,7 @@ public class JavaUsers implements tukano.api.java.Users {
 		return ok(hits);
 	}
 
+
 	private boolean badParam(String str) {
 		return str == null;
 	}

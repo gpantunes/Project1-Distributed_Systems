@@ -9,10 +9,6 @@ public class User {
 	private String email;
 	private String userId;
 	private String displayName;
-	private Map<String, Short> shortsMap;
-	private Map<String, User> followers;
-	private Map<String, Short> likedShorts;
-	private Map<String, User> followedUsers;
 
 	public User() {}
 	
@@ -21,10 +17,6 @@ public class User {
 		this.email = email;
 		this.userId = userId;
 		this.displayName = displayName;
-		this.shortsMap = new ConcurrentHashMap<>();
-		this.followers = new ConcurrentHashMap<>();
-		this.likedShorts = new ConcurrentHashMap<>();
-		this.followedUsers = new ConcurrentHashMap<>();
 	}
 
 	public String getUserId() {
@@ -84,31 +76,5 @@ public class User {
 	
 	public User secureCopy() {
 		return new User( getUserId(), "", getEmail(), getDisplayName());			
-	}
-
-
-
-	public void addFollower(User user){
-		followers.put(user.getUserId(), user);
-	}
-
-	public void removeFollower(User user){
-		followers.remove(user.getUserId());
-	}
-
-	public void addToFollowers(User user){
-		followedUsers.put(user.getUserId(), user);
-	}
-
-	public void removeFromFollowers(User user){
-		followedUsers.remove(user.getUserId());
-	}
-
-	public void addLike(Short vid){
-		likedShorts.put(vid.getShortId(), vid);
-	}
-
-	public void removeLike(Short vid){
-		likedShorts.remove(vid.getShortId());
 	}
 }
