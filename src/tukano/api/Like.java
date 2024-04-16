@@ -7,11 +7,11 @@ import jakarta.persistence.Id;
 public class Like {
 
     @Id
-    private int likeId;
+    private String likeId;
     private String userId;
     private String shortId;
 
-    public Like(int likeId, String userId, String shortId){
+    public Like(String likeId, String userId, String shortId){
         this.likeId = likeId;
         this.userId = userId;
         this.shortId = shortId;
@@ -19,7 +19,7 @@ public class Like {
 
     public Like() {}
 
-    public int getLikeId(){
+    public String getLikeId(){
         return likeId;
     }
 
