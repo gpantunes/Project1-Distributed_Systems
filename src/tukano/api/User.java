@@ -1,11 +1,21 @@
 package tukano.api;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+
+@Entity
 public class User {
-	
+
+	@Id
+	private String userId;
 	private String pwd;
 	private String email;
-	private String userId;
 	private String displayName;
+	private Long id;
 
 	public User() {}
 	
@@ -74,4 +84,5 @@ public class User {
 	public User secureCopy() {
 		return new User( getUserId(), "", getEmail(), getDisplayName());			
 	}
+
 }

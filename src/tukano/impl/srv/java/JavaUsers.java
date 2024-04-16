@@ -1,4 +1,4 @@
-package tukano.impl.srv.common;
+package tukano.impl.srv.java;
 
 import static tukano.api.service.util.Result.error;
 import static tukano.api.service.util.Result.ok;
@@ -8,18 +8,19 @@ import static tukano.api.service.util.Result.ErrorCode.FORBIDDEN;
 import static tukano.api.service.util.Result.ErrorCode.NOT_FOUND;
 
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
+import java.util.logging.Logger;
 
 import tukano.api.User;
 import tukano.api.service.util.Result;
+import tukano.impl.Hibernate;
 
 public class JavaUsers implements tukano.api.java.Users {
-	final protected Map<String, User> users = new ConcurrentHashMap<>();
 	final ExecutorService executor = Executors.newCachedThreadPool();
+
+	private static Logger Log = Logger.getLogger(JavaUsers.class.getName());
 
 	@Override
 	public Result<String> createUser(User user) {
@@ -27,12 +28,12 @@ public class JavaUsers implements tukano.api.java.Users {
 			return error(BAD_REQUEST);
 
 		var userId = user.getUserId();
-		var res = users.putIfAbsent(userId, user);
 
-		if (res != null)
+		if (!Hibernate.getInstance().sql("SELECT * FROM User WHERE userId = '" + userId + "'", User.class).isEmpty())
 			return error(CONFLICT);
-		else
-			return ok(userId);
+
+		Hibernate.getInstance().persist(user);
+		return ok(userId);
 	}
 
 	@Override
@@ -40,10 +41,12 @@ public class JavaUsers implements tukano.api.java.Users {
 		if (badParam(userId))
 			return error(BAD_REQUEST);
 
-		var user = users.get(userId);
+		var userList = Hibernate.getInstance().sql("SELECT * FROM User WHERE userId = '"+ userId + "'", User.class);
 
-		if (user == null)
+		if (userList.isEmpty())
 			return error(NOT_FOUND);
+
+		User user = userList.get(0);
 
 		if (badParam(pwd) || wrongPassword(user, pwd))
 			return error(FORBIDDEN);
@@ -51,37 +54,57 @@ public class JavaUsers implements tukano.api.java.Users {
 			return ok(user);
 	}
 
+	//ter em atenção aos campos null do que não é para alterar
 	@Override
 	public Result<User> updateUser(String userId, String pwd, User user) {
-		var userToBeUpdated = users.get(userId);
+		if (badParam(userId))
+			return error(BAD_REQUEST);
 
-		if (userToBeUpdated == null)
+		var userList = Hibernate.getInstance().sql("SELECT * FROM User WHERE userId = '" + userId + "'", User.class);
+
+		if (userList.isEmpty())
 			return error(NOT_FOUND);
 
-		if (badParam(pwd) || wrongPassword(userToBeUpdated, pwd))
+		User oldUser = userList.get(0);
+
+		if(user.getUserId() != null)
+			return error(BAD_REQUEST);
+
+		Log.info("(" + oldUser.getUserId() + ", " + oldUser.getPwd() + ", "
+				+ oldUser.getEmail() + ", " + oldUser.getDisplayName() + ")");
+
+		if (badParam(pwd) || wrongPassword(oldUser, pwd))
 			return error(FORBIDDEN);
-		else {
-			userToBeUpdated.updateUser(user);
-			return ok(userToBeUpdated);
-		}
+
+		oldUser.setPwd(Objects.requireNonNullElse(user.getPwd(), oldUser.getPwd()));
+		oldUser.setEmail(Objects.requireNonNullElse(user.getEmail(), oldUser.getEmail()));
+		oldUser.setDisplayName(Objects.requireNonNullElse(user.getDisplayName(), oldUser.getDisplayName()));
+
+		Hibernate.getInstance().update(oldUser);
+
+		return ok(oldUser);
 	}
 
 	@Override
 	public Result<User> deleteUser(String userId, String pwd) {
-		var user = users.get(userId);
+		if (badParam(userId))
+			return error(BAD_REQUEST);
 
-		if (user == null)
+		var userList = Hibernate.getInstance().sql("SELECT * FROM User WHERE userId = '" + userId + "'", User.class);
+
+		if(userList.isEmpty())
 			return error(NOT_FOUND);
+
+		User user = userList.get(0);
 
 		if (badParam(pwd) || wrongPassword(user, pwd))
 			return error(FORBIDDEN);
-		else {
-			users.remove(userId);
 
-			//TODO:we need to delete all shorts associated with this user
+		Hibernate.getInstance().delete(user);
 
-			return ok(user);
-		}
+		//TODO:we need to delete all shorts associated with this user
+
+		return ok(user);
 	}
 
 	@Override
@@ -89,14 +112,19 @@ public class JavaUsers implements tukano.api.java.Users {
 		if (badParam(pattern))
 			return error(BAD_REQUEST);
 
-		var hits = users.values()
+		pattern = pattern.toLowerCase();
+
+		var hits = Hibernate.getInstance().sql("SELECT * FROM User WHERE LOWER(userId) LIKE '%" + pattern + "%'", User.class);
+
+		/*var hits = users.values()
 				.stream()
 				.filter(u -> u.getDisplayName().toLowerCase().contains(pattern.toLowerCase()))
 				.map(User::secureCopy)
-				.collect(Collectors.toList());
+				.collect(Collectors.toList());*/
 
 		return ok(hits);
 	}
+
 
 	private boolean badParam(String str) {
 		return str == null;
