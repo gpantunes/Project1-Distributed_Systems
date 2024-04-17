@@ -11,13 +11,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
-/**
- * Performs service discovery. Used by servers to announce themselves, and clients
- * to discover services on demand.
- * 
- * @author smduarte
- *
- */
+
 public class Discovery {
 	private static Logger Log = Logger.getLogger(Discovery.class.getName());
 	private static final String DELIMITER = "\t";

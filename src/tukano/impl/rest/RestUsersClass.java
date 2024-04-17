@@ -12,11 +12,16 @@ import java.util.List;
 import java.util.logging.Logger;
 
 
-public class RestUsersClass implements RestUsers {
+public class RestUsersClass implements RestUsers{
 
     Users userServer = new JavaUsers();
 
     private static Logger Log = Logger.getLogger(JavaUsers.class.getName());
+
+    private static final String EXT = "/x";
+    private static final String PASSWORD = "password";
+    private static final String QUERY = "query";
+
 
     @Override
     public String createUser(User user) {

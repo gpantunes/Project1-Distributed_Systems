@@ -22,8 +22,8 @@ public class JavaShorts implements tukano.api.java.Shorts {
 
     @Override
     public Result<Short> createShort(String userId, String password) {
-
         //User user = temos de fazer um pedido rest ao server de users para autenticar
+
 
 
         // TODO Auto-generated method stub
