@@ -1,6 +1,7 @@
 package tukano.api.java;
 
 import java.util.function.Consumer;
+import tukano.api.service.util.Result;
 
 /**
  * Interface of blob service for storing short videos media ...

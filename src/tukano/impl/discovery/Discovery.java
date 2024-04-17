@@ -11,13 +11,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
-/**
- * Performs service discovery. Used by servers to announce themselves, and clients
- * to discover services on demand.
- * 
- * @author smduarte
- *
- */
+
 public class Discovery {
 	private static Logger Log = Logger.getLogger(Discovery.class.getName());
 	private static final String DELIMITER = "\t";
@@ -29,7 +23,7 @@ public class Discovery {
 		System.setProperty("java.util.logging.SimpleFormatter.format", "%4$s: %5$s");
 	}
 
-	static final InetSocketAddress DISCOVERY_ADDR = new InetSocketAddress("226.226.226.226", 2266);
+	static final InetSocketAddress DISCOVERY_ADDR = new InetSocketAddress("226.226.226.226", 2262);
 	static final int DISCOVERY_PERIOD = 1000;
 	static final int DISCOVERY_TIMEOUT = 5000;
 

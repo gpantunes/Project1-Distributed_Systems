@@ -1,31 +1,30 @@
 package tukano.impl.srv.java;
 
-import static tukano.api.service.util.Result.ErrorCode.BAD_REQUEST;
-import static tukano.api.service.util.Result.ErrorCode.NOT_FOUND;
+import static tukano.api.service.util.Result.ErrorCode.*;
 import static tukano.api.service.util.Result.error;
 import static tukano.api.service.util.Result.ok;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import tukano.api.Follow;
+import tukano.api.Like;
 import tukano.api.Short;
 import tukano.api.User;
 import tukano.api.service.util.Result;
 import tukano.impl.Hibernate;
 
 public class JavaShorts implements tukano.api.java.Shorts {
-	final protected Map<String, Short> shorts = new ConcurrentHashMap<>();
 	final ExecutorService executor = Executors.newCachedThreadPool();
 
     @Override
     public Result<Short> createShort(String userId, String password) {
+        //User user = temos de fazer um pedido rest ao server de users para autenticar
 
-        //User user = temos de fazer um pedido rest ao server de users
+
 
         // TODO Auto-generated method stub
 
@@ -127,8 +126,26 @@ public class JavaShorts implements tukano.api.java.Shorts {
         //fazer um get user para verificar a password
         //User user = getUser(userId, password);
 
-        //user.addLike(shortList.get(0));
+        var likeList = Hibernate.getInstance().sql("SELECT * FROM Like WHERE userId = '"
+                + userId + "' AND shortId = '" + shortId + "'" , Like.class);
 
+        if(isLiked){
+            if(!likeList.isEmpty())
+                return error(CONFLICT);
+
+            var userLikes = Hibernate.getInstance().sql("SELECT * FROM Like WHERE userId = '"
+                    + userId + "'", Like.class);
+
+            int likeNum = userLikes.size();
+            String likeId = userId.concat(String.valueOf(likeNum));
+
+            Hibernate.getInstance().persist(new Like(likeId, userId, shortId));
+        }else {
+            if(likeList.isEmpty())
+                return error(NOT_FOUND);
+
+            Hibernate.getInstance().delete(likeList.get(0));
+        }
         return ok();
     }
 
@@ -138,14 +155,22 @@ public class JavaShorts implements tukano.api.java.Shorts {
             return error(BAD_REQUEST);
 
         Short vid = getShort(shortId).value();
-
         if(vid == null)
             return error(NOT_FOUND);
 
-        //fazer um pedido getUser
-        //passar o mapa de likes para lista
+        String ownerId = vid.getOwnerId();
+        //fazer um pedido getUser para verificação
+        //getuser(ownerId, password);
 
-        return ok();
+        var likeList = Hibernate.getInstance().sql("SELECT * FROM Like WHERE shortId = '"
+                + shortId + "'", Like.class);
+
+        List<String> likeIdList = new ArrayList<>(likeList.size());
+        for(int i = 0; i < likeIdList.size(); i++){
+            likeIdList.add(i, likeList.get(i).getLikeId());
+        }
+
+        return ok(likeIdList);
     }
 
     @Override
