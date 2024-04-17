@@ -3,10 +3,6 @@ package tukano.api;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-
 @Entity
 public class User {
 

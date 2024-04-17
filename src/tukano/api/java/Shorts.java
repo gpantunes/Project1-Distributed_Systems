@@ -1,6 +1,5 @@
 package tukano.api.java;
 
-
 import java.util.List;
 
 import tukano.api.Short;

@@ -6,8 +6,7 @@ import static tukano.api.service.util.Result.ok;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -19,13 +18,13 @@ import tukano.api.service.util.Result;
 import tukano.impl.Hibernate;
 
 public class JavaShorts implements tukano.api.java.Shorts {
-	final protected Map<String, Short> shorts = new ConcurrentHashMap<>();
 	final ExecutorService executor = Executors.newCachedThreadPool();
 
     @Override
     public Result<Short> createShort(String userId, String password) {
 
-        //User user = temos de fazer um pedido rest ao server de users
+        //User user = temos de fazer um pedido rest ao server de users para autenticar
+
 
         // TODO Auto-generated method stub
 

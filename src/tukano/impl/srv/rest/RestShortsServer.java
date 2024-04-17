@@ -2,6 +2,7 @@ package tukano.impl.srv.rest;
 
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
+import tukano.impl.discovery.Discovery;
 import tukano.impl.rest.RestShortsClass;
 
 import java.net.InetAddress;
@@ -16,9 +17,16 @@ public class RestShortsServer {
         System.setProperty("java.net.preferIPv4Stack", "true");
     }
 
+    private static Discovery discovery = new Discovery();
+    private static final String USER_SERVICE = "users";
+    private static final String SHORT_SERVICE = "shorts";
+    private static final String BLOB_SERVICE = "blobs";
+
     public static final int PORT = 4567;
-    public static final String SERVICE = "ShortsService";
     private static final String SERVER_URI_FMT = "http://%s:%s/rest";
+
+    private static URI[] userURI;
+    private static URI[] blobURI;
 
     public static void main(String[] args) {
         try {
@@ -29,9 +37,12 @@ public class RestShortsServer {
             String serverURI = String.format(SERVER_URI_FMT, ip, PORT);
             JdkHttpServerFactory.createHttpServer(URI.create(serverURI), config);
 
-            Log.info(String.format("%s Short server ready @ %s\n", SERVICE, serverURI));
+            Log.info(String.format("%s Short server ready @ %s\n", SHORT_SERVICE, serverURI));
 
-            // More code can be executed here...
+            discovery.announce(SHORT_SERVICE, serverURI);
+
+            userURI = discovery.findUrisOf(USER_SERVICE, 1);
+            blobURI = discovery.findUrisOf(BLOB_SERVICE, 1);
         } catch (Exception e) {
             Log.severe(e.getMessage());
         }
