@@ -15,7 +15,7 @@ import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.core.Response.StatusType;
 import tukano.api.java.Users;
 import tukano.api.service.util.Result;
-import tukano.impl.client.RetryClient;
+import tukano.impl.client.common.RetryClient;
 
 import static tukano.api.service.util.Result.error;
 import static tukano.api.service.util.Result.ok;
