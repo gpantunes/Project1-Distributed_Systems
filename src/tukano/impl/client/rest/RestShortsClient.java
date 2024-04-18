@@ -16,10 +16,6 @@ import tukano.api.service.util.Result;
 
 public class RestShortsClient extends RestClient implements Shorts {
 	private static final String PASSWORD = "password";
-	String USER_ID = "userId";
-	String USER_ID1 = "userId1";
-	String USER_ID2 = "userId2";
-	String SHORT_ID = "shortId";
 
 	String PWD = "pwd";
 	String FEED = "/feed";
@@ -39,8 +35,7 @@ public class RestShortsClient extends RestClient implements Shorts {
 				.queryParam(PASSWORD, password)
 				.request()
 				.accept(MediaType.APPLICATION_JSON)
-				.post(Entity.entity(new GenericType<byte[]>() {
-				}, MediaType.APPLICATION_JSON)); // TODO: nao sei es esta correto!!!!!!!!!!!!!
+				.post(Entity.json(""));
 		return super.responseContents(r, Status.OK, new GenericType<Short>() {
 		});
 	}

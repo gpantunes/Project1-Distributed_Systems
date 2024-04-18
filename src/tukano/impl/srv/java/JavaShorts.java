@@ -4,31 +4,59 @@ import static tukano.api.service.util.Result.ErrorCode.*;
 import static tukano.api.service.util.Result.error;
 import static tukano.api.service.util.Result.ok;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 
 import tukano.api.Follow;
-import tukano.api.Like;
+import tukano.api.Likes;
 import tukano.api.Short;
 import tukano.api.User;
 import tukano.api.service.util.Result;
 import tukano.impl.Hibernate;
+import tukano.impl.client.UsersClientFactory;
+import tukano.impl.client.rest.RestUsersClient;
+import tukano.impl.discovery.Discovery;
 
 public class JavaShorts implements tukano.api.java.Shorts {
 	final ExecutorService executor = Executors.newCachedThreadPool();
+    private static Logger Log = Logger.getLogger(JavaShorts.class.getName());
+
+    Discovery discovery = new Discovery();
+
+    //URI[] userUris = discovery.findUrisOf("users", 1);
+    URI[] blobUris = discovery.findUrisOf("blobs", 1);
 
     @Override
     public Result<Short> createShort(String userId, String password) {
-        //User user = temos de fazer um pedido rest ao server de users para autenticar
+        var client = UsersClientFactory.getClient();
 
+        Log.info("############################# antes de ir buscar o user");
 
+        var result = client.getUser(userId, password);
 
-        // TODO Auto-generated method stub
+        Log.info("############################# depois de ir buscar o user");
 
-        return ok();
+        if(!result.isOK())
+            return Result.error(result.error());
+
+        try {
+            String shortId = String.valueOf(UUID.randomUUID());
+            String blobId = blobUris[0] + "/blobs/" + shortId;
+
+            Short vid = new Short(userId, shortId, blobId);
+
+            Hibernate.getInstance().persist(vid);
+
+            return ok(vid);
+        }catch (Exception e){
+            return Result.error(INTERNAL_ERROR);
+        }
     }
 
     @Override
@@ -86,10 +114,8 @@ public class JavaShorts implements tukano.api.java.Shorts {
         //pedido rest com getUser(userId1, password)
         //User user1 = getUser(userId1);
 
-        int followNum = Hibernate.getInstance().sql("SELECT * FROM Follow", Follow.class).size();
-
         if(isFollowing){
-            Hibernate.getInstance().persist(new Follow(followNum, userId1, userId2));
+            Hibernate.getInstance().persist(new Follow(userId1, userId2));
         } else {
             var follow = Hibernate.getInstance().sql("SELECT * FROM Follow WHERE followerId = '"
                     + userId1  + "' AND followedId = '" + userId2 + "'", Follow.class);
@@ -127,19 +153,19 @@ public class JavaShorts implements tukano.api.java.Shorts {
         //User user = getUser(userId, password);
 
         var likeList = Hibernate.getInstance().sql("SELECT * FROM Like WHERE userId = '"
-                + userId + "' AND shortId = '" + shortId + "'" , Like.class);
+                + userId + "' AND shortId = '" + shortId + "'" , Likes.class);
 
         if(isLiked){
             if(!likeList.isEmpty())
                 return error(CONFLICT);
 
             var userLikes = Hibernate.getInstance().sql("SELECT * FROM Like WHERE userId = '"
-                    + userId + "'", Like.class);
+                    + userId + "'", Likes.class);
 
             int likeNum = userLikes.size();
             String likeId = userId.concat(String.valueOf(likeNum));
 
-            Hibernate.getInstance().persist(new Like(likeId, userId, shortId));
+            Hibernate.getInstance().persist(new Likes(userId, shortId));
         }else {
             if(likeList.isEmpty())
                 return error(NOT_FOUND);
@@ -163,12 +189,12 @@ public class JavaShorts implements tukano.api.java.Shorts {
         //getuser(ownerId, password);
 
         var likeList = Hibernate.getInstance().sql("SELECT * FROM Like WHERE shortId = '"
-                + shortId + "'", Like.class);
+                + shortId + "'", Likes.class);
 
         List<String> likeIdList = new ArrayList<>(likeList.size());
-        for(int i = 0; i < likeIdList.size(); i++){
+        /*for(int i = 0; i < likeIdList.size(); i++){
             likeIdList.add(i, likeList.get(i).getLikeId());
-        }
+        }*/
 
         return ok(likeIdList);
     }

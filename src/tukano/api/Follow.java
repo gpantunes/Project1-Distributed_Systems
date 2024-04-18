@@ -7,12 +7,10 @@ import jakarta.persistence.Id;
 public class Follow {
 
     @Id
-    private int followId;
     private String followerId;
     private String followedId;
 
-    public Follow(int followId, String followerId, String followedId){
-        this.followId = followId;
+    public Follow(String followerId, String followedId){
         this.followerId = followerId;
         this.followedId = followedId;
     }

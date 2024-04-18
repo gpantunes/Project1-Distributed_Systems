@@ -4,24 +4,18 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
 @Entity
-public class Like {
+public class Likes {
 
     @Id
-    private String likeId;
     private String userId;
     private String shortId;
 
-    public Like(String likeId, String userId, String shortId){
-        this.likeId = likeId;
+    public Likes(String userId, String shortId){
         this.userId = userId;
         this.shortId = shortId;
     }
 
-    public Like() {}
-
-    public String getLikeId(){
-        return likeId;
-    }
+    public Likes() {}
 
     public String getUserId(){
         return userId;
