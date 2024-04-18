@@ -4,9 +4,11 @@ import static tukano.api.service.util.Result.ErrorCode.*;
 import static tukano.api.service.util.Result.error;
 import static tukano.api.service.util.Result.ok;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -14,19 +16,35 @@ import tukano.api.Follow;
 import tukano.api.Like;
 import tukano.api.Short;
 import tukano.api.User;
+import tukano.api.rest.RestBlobs;
+import tukano.api.rest.RestUsers;
 import tukano.api.service.util.Result;
 import tukano.impl.Hibernate;
+import tukano.impl.discovery.Discovery;
+import tukano.impl.rest.RestBlobsClass;
+import tukano.impl.rest.RestUsersClass;
 
 public class JavaShorts implements tukano.api.java.Shorts {
 	final ExecutorService executor = Executors.newCachedThreadPool();
+
+    RestUsers usersServer = new RestUsersClass();
+    RestBlobs blobsServer = new RestBlobsClass();
+
+    Discovery discovery = new Discovery();
 
     @Override
     public Result<Short> createShort(String userId, String password) {
         //User user = temos de fazer um pedido rest ao server de users para autenticar
 
+        User user = usersServer.getUser(userId, password);
+        String shortId = String.valueOf(UUID.randomUUID());
+
+        String blobUrl = getBlobUrl().concat("/blobs/" + shortId);
 
 
-        // TODO Auto-generated method stub
+
+        Short vid = new Short(shortId, userId, blobUrl, System.currentTimeMillis()/1000, 0);
+
 
         return ok();
     }
@@ -193,8 +211,10 @@ public class JavaShorts implements tukano.api.java.Shorts {
                 || badParam(user.getPwd());
     }
 
-    private boolean wrongPassword(User user, String password) {
-        return !user.getPwd().equals(password);
+    private String getBlobUrl(){
+        URI[] uris = discovery.findUrisOf("blobs", 1);
+
+        return String.valueOf(uris[0]);
     }
 
 }
