@@ -51,7 +51,7 @@ public class JavaShorts implements tukano.api.java.Shorts {
             String shortId = String.valueOf(UUID.randomUUID());
             String blobId =  blobUris[0] + "/blobs/" + shortId;
 
-            Short vid = new Short(shortId, userId, blobId, System.currentTimeMillis()/1000, 0);
+            Short vid = new Short(shortId, userId, blobId, System.currentTimeMillis(), 0);
 
             Hibernate.getInstance().persist(vid);
 
@@ -100,7 +100,7 @@ public class JavaShorts implements tukano.api.java.Shorts {
         if(badParam(userId))
             return error(BAD_REQUEST);
 
-        Log.info("##################### getShorts foi chamado carai");
+        Log.info("##################### getShorts foi chamado");
 
        var shortList = Hibernate.getInstance().sql("SELECT * FROM Short WHERE ownerId = '" + userId + "'", Short.class);
        List<String> idList = new ArrayList<>(shortList.size());
@@ -133,7 +133,9 @@ public class JavaShorts implements tukano.api.java.Shorts {
                 Hibernate.getInstance().persist(new Follow(userId1, userId2));
             else return error(CONFLICT);
         } else {
-            Hibernate.getInstance().delete(follow);
+            Log.info("############ vai apagar um follow" + follow.isEmpty());
+            if(!follow.isEmpty())
+                Hibernate.getInstance().delete(follow.get(0));
         }
 
         return ok();
@@ -172,28 +174,34 @@ public class JavaShorts implements tukano.api.java.Shorts {
             return error(BAD_REQUEST);
 
         var result = client.getUser(userId, password);
+        var vid = getShort(shortId).value();
+        int totalLikes = vid.getTotalLikes();
 
         if(!result.isOK()) {
             Log.info("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" + error(result.error()));
             return Result.error(result.error());
         }
 
-        var likeList = Hibernate.getInstance().sql("SELECT * FROM Like WHERE userId = '"
+        var likeList = Hibernate.getInstance().sql("SELECT * FROM Likes WHERE userId = '"
                 + userId + "' AND shortId = '" + shortId + "'" , Likes.class);
 
         if(isLiked){
             if(!likeList.isEmpty())
                 return error(CONFLICT);
 
-            var userLikes = Hibernate.getInstance().sql("SELECT * FROM Like WHERE userId = '"
+            var userLikes = Hibernate.getInstance().sql("SELECT * FROM Likes WHERE userId = '"
                     + userId + "'", Likes.class);
 
             Hibernate.getInstance().persist(new Likes(userId, shortId));
+            vid.setTotalLikes(totalLikes + 1);
+            Hibernate.getInstance().update(vid);
         }else {
             if(likeList.isEmpty())
                 return error(NOT_FOUND);
 
             Hibernate.getInstance().delete(likeList.get(0));
+            vid.setTotalLikes(totalLikes - 1);
+            Hibernate.getInstance().update(vid);
         }
         return ok();
     }
@@ -217,12 +225,14 @@ public class JavaShorts implements tukano.api.java.Shorts {
             return Result.error(result.error());
         }
 
-        var likeList = Hibernate.getInstance().sql("SELECT * FROM Like WHERE shortId = '"
+        var likeList = Hibernate.getInstance().sql("SELECT * FROM Likes WHERE shortId = '"
                 + shortId + "'", Likes.class);
 
-        List<String> likeIdList = new ArrayList<>(likeList.size());
-        for(int i = 0; i < likeIdList.size(); i++){
-            likeIdList.add(i, likeList.get(i).getShortId());
+        Log.info("%%%%%%%%%%%%%%%%%%%% like list size " + likeList.size());
+
+        List<String> likeIdList = new ArrayList<>();
+        for(int i = 0; i < likeList.size(); i++){
+            likeIdList.add(likeList.get(i).getUserId());
         }
 
         return ok(likeIdList);
@@ -251,7 +261,7 @@ public class JavaShorts implements tukano.api.java.Shorts {
         List<Short> completeShortList = new ArrayList<>();
 
         for(int i = 0; i < followedIdList.size(); i++){
-            var shortList = Hibernate.getInstance().sql("SELECT * FROM Short WHERE userId = '"
+            var shortList = Hibernate.getInstance().sql("SELECT * FROM Short WHERE ownerId = '"
                     + followedIdList.get(i) + "'", Short.class);
 
             completeShortList.addAll(shortList);
@@ -292,7 +302,7 @@ public class JavaShorts implements tukano.api.java.Shorts {
     public class ShortTimestampComparator implements Comparator<Short> {
         @Override
         public int compare(Short s1, Short s2) {
-            return Long.compare(s1.getTimestamp(), s2.getTimestamp());
+            return Long.compare(s2.getTimestamp(), s1.getTimestamp());
         }
     }
 
