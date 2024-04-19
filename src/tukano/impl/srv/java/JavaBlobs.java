@@ -8,14 +8,46 @@ import tukano.api.service.util.Result;
 import tukano.impl.Hibernate;
 
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
+
+import static tukano.api.service.util.Result.ErrorCode.INTERNAL_ERROR;
 
 public class JavaBlobs implements tukano.api.java.Blobs{
 
+    private static Logger Log = Logger.getLogger(JavaBlobs.class.getName());
+
     @Override
     public Result<Void> upload(String blobId, byte[] bytes) {
+        Log.info("####################### upload foi chamado");
 
-        Hibernate.getInstance().persist(new Blob(blobId, bytes));
+        String filePath = "blobFiles/" + blobId;
+        String directoryPath = "blobFiles/";
+
+        try {
+            Path directory = Paths.get(directoryPath);
+            if (!Files.exists(directory))
+                Files.createDirectories(directory);
+
+            Log.info("########### criou a diretoria");
+
+            // Convert byte array to Path object
+            Path path = Paths.get(filePath);
+
+            // Write the bytes to the file
+            Files.write(path, bytes);
+
+            Log.info("################# ficheiro escrito");
+        } catch (IOException e) {
+            Log.info("################ escrita falhou " + e.getMessage());
+            return Result.error(INTERNAL_ERROR);
+        }
+
+        Hibernate.getInstance().persist(new Blob(blobId, blobId));
 
         return Result.ok();
     }
@@ -27,7 +59,18 @@ public class JavaBlobs implements tukano.api.java.Blobs{
                 + blobId + "'", Blob.class);
 
         Blob blob = blobList.get(0);
-        byte[] content = blob.getBytes();
+        byte[] content;
+
+        try{
+            String filePath = "blobFiles/" + blobId;
+            Path path = Paths.get(filePath);
+
+            content = Files.readAllBytes(path);
+        }catch (IOException e){
+            Log.info("################# leitura falhou");
+            return Result.error(INTERNAL_ERROR);
+        }
+
 
         return Result.ok(content);
     }

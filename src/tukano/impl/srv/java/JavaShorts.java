@@ -29,9 +29,7 @@ public class JavaShorts implements tukano.api.java.Shorts {
     private static Logger Log = Logger.getLogger(JavaShorts.class.getName());
 
     Discovery discovery = Discovery.getInstance();
-
     URI[] blobUris = discovery.findUrisOf("blobs", 1);
-
     Users client = UsersClientFactory.getClient();
 
     @Override

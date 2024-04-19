@@ -7,6 +7,8 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
 import tukano.api.java.Shorts;
+import tukano.api.java.Users;
+import tukano.impl.client.rest.RestUsersClient;
 import tukano.impl.discovery.Discovery;
 import tukano.impl.client.rest.RestShortsClient;
 // import tukano.impl.client.grpc.GrpcShortsClient;
@@ -21,37 +23,12 @@ public class ShortsClientFactory {
 
 	static Discovery discovery = Discovery.getInstance();
 
-	static LoadingCache<URI, Shorts> shorts = CacheBuilder.newBuilder().maximumSize(CACHE_CAPACITY)
-			.build(new CacheLoader<>() {
-				@Override
-				public Shorts load(URI uri) throws Exception {
-					Shorts client;
-					if (uri.toString().endsWith(REST))
-						client = new RestShortsClient(uri);
-					// else if (uri.toString().endsWith(GRPC))
-					// 	client = new GrpcShortsClient(uri);
-					else
-						throw new RuntimeException("Unknown service type..." + uri);
-
-					return new RetryShortsClient(client);
-				}
-			});
-
-	public static Shorts get() {
-		return get(String.format("%s", SERVICE));
-	}
-
-	public static Shorts get(String fullName) {
-		URI[] uris = Discovery.getInstance().findUrisOf(fullName, 1);
-		return getByUri(uris[0].toString());
-	}
-
-	public static Shorts getByUri(String uriString) {
-		try {
-			return shorts.get(URI.create(uriString));
-		} catch (Exception x) {
-			x.printStackTrace();
-		}
-		return null;
+	public static Shorts getClient() {
+		var Uri = discovery.findUrisOf("users", 1);
+		var serverURI = Uri[0];
+		if( String.valueOf(serverURI).endsWith("rest"))
+			return new RestShortsClient(serverURI);
+		else
+			return null;//new GrpcShortsClient(serverURI);
 	}
 }

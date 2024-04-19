@@ -14,7 +14,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Logger;
 
-public class RestShortsClass implements RestShorts, Serializable {
+public class RestShortsClass implements RestShorts{
 
     Shorts shortServer = new JavaShorts();
 
@@ -45,7 +45,7 @@ public class RestShortsClass implements RestShorts, Serializable {
     public List<String> getShorts(String userId) {
         Log.info(String.format("REST get shorts " + userId));
 
-        return (List<String>) checkResult(shortServer.getShorts(userId));
+        return checkResult(shortServer.getShorts(userId));
     }
 
     @Override

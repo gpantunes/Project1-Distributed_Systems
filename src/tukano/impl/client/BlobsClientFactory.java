@@ -20,32 +20,5 @@ public class BlobsClientFactory {
 
 	private static final long CACHE_CAPACITY = 10;
 	
-	static LoadingCache<URI, Blobs> blobs = CacheBuilder.newBuilder().maximumSize(CACHE_CAPACITY)
-			.build(new CacheLoader<>() {
-				@Override
-				public Blobs load(URI uri) throws Exception {
-					Blobs client;
-					if (uri.toString().endsWith(REST))
-						client = new RestBlobsClient(uri);
-					// else if (uri.toString().endsWith(GRPC))
-					// 	client = new GrpcBlobsClient(uri);
-					else
-						throw new RuntimeException("Unknown service type..." + uri);
-					
-					return new RetryBlobsClient(client);
-				}
-			});
-	
-	public static Blobs get() {
-		return get(String.format("%s", SERVICE));
-	}
-	
-	public static Blobs get( String fullname ) {
-		URI[] uris = Discovery.getInstance().findUrisOf(String.format("%s", SERVICE), 1);
-		return with(uris[0].toString());
-	}
-	
-	public static Blobs with(String uriString) {
-		return blobs.getUnchecked( URI.create(uriString));					
-	}
+
 }

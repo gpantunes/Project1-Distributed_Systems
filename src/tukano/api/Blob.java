@@ -8,22 +8,22 @@ public class Blob {
 
     @Id
     private String blobId;
-    private byte[] bytes;
+    private String fileId;
 
     public Blob() {
 
     }
 
-    public Blob(String blobId, byte[] bytes) {
+    public Blob(String blobId, String fileId) {
         this.blobId = blobId;
-        this.bytes = bytes;
+        this.fileId = fileId;
     }
 
     public String getBlobId() {
         return blobId;
     }
 
-    public byte[] getBytes(){
-        return bytes;
+    public String getFileId(){
+        return fileId;
     }
 }

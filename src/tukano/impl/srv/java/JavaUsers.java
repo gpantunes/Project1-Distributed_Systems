@@ -14,13 +14,17 @@ import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 import tukano.api.User;
+import tukano.api.java.Shorts;
 import tukano.api.service.util.Result;
 import tukano.impl.Hibernate;
+import tukano.impl.client.ShortsClientFactory;
 
 public class JavaUsers implements tukano.api.java.Users {
 	final ExecutorService executor = Executors.newCachedThreadPool();
 
 	private static Logger Log = Logger.getLogger(JavaUsers.class.getName());
+
+	Shorts client = ShortsClientFactory.getClient();
 
 	@Override
 	public Result<String> createUser(User user) {
@@ -48,7 +52,7 @@ public class JavaUsers implements tukano.api.java.Users {
 
 		User user = userList.get(0);
 
-		Log.info("############################ pawword:" + pwd);
+		Log.info("############################ password:" + pwd);
 
 		if (badParam(pwd) || wrongPassword(user, pwd))
 			return error(FORBIDDEN);
@@ -104,7 +108,15 @@ public class JavaUsers implements tukano.api.java.Users {
 
 		Hibernate.getInstance().delete(user);
 
-		//TODO:we need to delete all shorts associated with this user
+		var shortList = client.getShorts(userId).value();
+
+		Log.info("%%%%%%%%%%%% antes de apagar shorts");
+
+		for(int i = 0; i < shortList.size(); i++){
+			client.deleteShort(shortList.get(i), pwd);
+		}
+
+		Log.info("%%%%%%%%%%%% depois de apagar shorts");
 
 		return ok(user);
 	}
