@@ -24,19 +24,18 @@ public class RetryUsersClient extends RetryClient implements Users {
         return reTry( () -> impl.getUser(userId, password));
     }
 
-
     @Override
     public Result<User> updateUser(String userId, String pwd, User user) {
-        return null;
+        return reTry( () -> impl.updateUser(userId, pwd, user));
     }
 
     @Override
     public Result<User> deleteUser(String userId, String pwd) {
-        return null;
+        return reTry( () -> impl.deleteUser(userId, pwd));
     }
 
     @Override
     public Result<List<User>> searchUsers(String pattern) {
-        return null;
+        return reTry( () -> impl.searchUsers(pattern));
     }
 }

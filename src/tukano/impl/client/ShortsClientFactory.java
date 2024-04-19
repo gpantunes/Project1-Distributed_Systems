@@ -7,7 +7,6 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
 import tukano.api.java.Shorts;
-// import tukano.impl.srv.Domain;
 import tukano.impl.discovery.Discovery;
 import tukano.impl.client.rest.RestShortsClient;
 // import tukano.impl.client.grpc.GrpcShortsClient;
