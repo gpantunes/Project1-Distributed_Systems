@@ -53,7 +53,8 @@ public class RestShortsClient extends RestClient implements Shorts {
 
 	@Override
 	public Result<Short> getShort(String shortId) {
-		Response r = target.path(shortId)
+		Response r = target
+				.path(shortId)
 				.request()
 				.accept(MediaType.APPLICATION_JSON)
 				.get();
@@ -63,8 +64,8 @@ public class RestShortsClient extends RestClient implements Shorts {
 
 	@Override
 	public Result<List<String>> getShorts(String userId) {
-		Response r = target.path("/")
-				.path("{" + userId + "}" + SHORTS)
+		Response r = target
+				.path(userId + SHORTS)
 				.request()
 				.accept(MediaType.APPLICATION_JSON)
 				.get();
@@ -75,18 +76,18 @@ public class RestShortsClient extends RestClient implements Shorts {
 	@Override
 	public Result<Void> follow(String userId1, String userId2, boolean isFollowing, String password) {
 		Response r = target
-				.path("/{" + userId1 + "}/{" + userId2 + "}" + FOLLOWERS)
+				.path(userId1 + "/" + userId2 + FOLLOWERS)
 				.queryParam(PASSWORD, password)
 				.request()
 				.accept(MediaType.APPLICATION_JSON)
-				.post(null); // TODO: nao sei o que por dentro do post
+				.post(null);
 		return super.responseContents(r, Status.NO_CONTENT, null);
 	}
 
 	@Override
 	public Result<List<String>> followers(String userId, String password) {
-		Response r = target.path("/")
-				.path("{" + userId + "}" + FOLLOWERS)
+		Response r = target
+				.path(userId + FOLLOWERS)
 				.queryParam(PASSWORD, password)
 				.request()
 				.accept(MediaType.APPLICATION_JSON)
@@ -97,8 +98,8 @@ public class RestShortsClient extends RestClient implements Shorts {
 
 	@Override
 	public Result<Void> like(String shortId, String userId, boolean isLiked, String password) {
-		Response r = target.path("/")
-				.path("{" + shortId + "}/{" + userId + "}" + LIKES)
+		Response r = target
+				.path(shortId + "/" + userId + LIKES)
 				.queryParam(PASSWORD, password)
 				.request()
 				.accept(MediaType.APPLICATION_JSON)
@@ -108,8 +109,8 @@ public class RestShortsClient extends RestClient implements Shorts {
 
 	@Override
 	public Result<List<String>> likes(String shortId, String password) {
-		Response r = target.path("/")
-				.path("{" + shortId + "}" + LIKES)
+		Response r = target
+				.path(shortId + LIKES)
 				.queryParam(PASSWORD, password)
 				.request()
 				.accept(MediaType.APPLICATION_JSON)
@@ -120,8 +121,8 @@ public class RestShortsClient extends RestClient implements Shorts {
 
 	@Override
 	public Result<List<String>> getFeed(String userId, String password) {
-		Response r = target.path("/")
-				.path("{" + userId + "}" + FEED)
+		Response r = target
+				.path(userId + FEED)
 				.queryParam(PASSWORD, password)
 				.request()
 				.accept(MediaType.APPLICATION_JSON)
