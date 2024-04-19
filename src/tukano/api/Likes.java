@@ -8,6 +8,7 @@ public class Likes {
 
     @Id
     private String userId;
+    @Id
     private String shortId;
 
     public Likes(String userId, String shortId){
