@@ -10,18 +10,15 @@ import java.util.Comparator;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.Supplier;
 import java.util.logging.Logger;
 
 import tukano.api.Follow;
 import tukano.api.Likes;
 import tukano.api.Short;
-import tukano.api.User;
 import tukano.api.java.Users;
 import tukano.api.service.util.Result;
 import tukano.impl.Hibernate;
 import tukano.impl.client.UsersClientFactory;
-import tukano.impl.client.rest.RestUsersClient;
 import tukano.impl.discovery.Discovery;
 
 public class JavaShorts implements tukano.api.java.Shorts {
@@ -66,12 +63,20 @@ public class JavaShorts implements tukano.api.java.Shorts {
         if(badParam(shortId) || badParam(password))
             return error(BAD_REQUEST);
 
-        //pedido rest para verificar a password
-
         Short vid = getShort(shortId).value();
+        String ownerId = vid.getOwnerId();
+        var result = client.getUser(ownerId, password);
+        if(!result.isOK()) {
+            Log.info("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" + error(result.error()));
+            return Result.error(result.error());
+        }
 
         if(vid == null)
             return error(NOT_FOUND);
+
+        if(!deleteShortLikes(shortId, password))
+            Log.info("############## delete de likes falhou");
+
 
         Hibernate.getInstance().delete(vid);
 
@@ -276,25 +281,33 @@ public class JavaShorts implements tukano.api.java.Shorts {
 
     }
 
-    private boolean badParam(String str) {
-		return str == null;
-	}
 
-	private boolean badShort(Short sh) {
-		return sh == null || badParam(sh.getShortId()) || badParam(sh.getBlobUrl())
-				|| badParam(sh.getOwnerId());
-	}
+    @Override
+    public Result<Void> deleteFollows(String userId) {
+        Log.info("################# delete follow foi chamado " + userId);
 
-    private boolean badUser(User user) {
-        return user == null || badParam(user.getEmail()) || badParam(user.getDisplayName())
-                || badParam(user.getPwd());
+        var followedList = Hibernate.getInstance().sql("SELECT * FROM Follow WHERE followerId = '"
+                + userId + "'", Follow.class);
+        var followerList = Hibernate.getInstance().sql("SELECT * FROM Follow WHERE followedId = '"
+                + userId + "'", Follow.class);
+
+        try{
+            for(int i = 0; i < followedList.size(); i++){
+                Hibernate.getInstance().delete(followedList.get(i));
+            }
+
+            for(int j = 0; j < followerList.size(); j++){
+                Hibernate.getInstance().delete(followerList.get(j));
+            }
+
+        }catch (Exception e){
+            return Result.error(INTERNAL_ERROR);
+        }
+
+        Log.info("################## delete de follows terminou");
+
+        return ok();
     }
-
-    private boolean wrongPassword(User user, String password) {
-        return !user.getPwd().equals(password);
-    }
-
-
 
 
     public class ShortTimestampComparator implements Comparator<Short> {
@@ -302,6 +315,36 @@ public class JavaShorts implements tukano.api.java.Shorts {
         public int compare(Short s1, Short s2) {
             return Long.compare(s2.getTimestamp(), s1.getTimestamp());
         }
+    }
+
+
+
+    private boolean badParam(String str) {
+        return str == null;
+    }
+
+
+
+    private boolean deleteShortLikes(String shortId, String password){
+        Log.info("############### delete likes foi chamado " + shortId);
+
+        try{
+            var likeList = likes(shortId, password).value();
+
+            for(int i = 0; i < likeList.size(); i++){
+                var likesToDelete = Hibernate.getInstance().sql("SELECT * FROM Likes WHERE userId = '"
+                        + likeList.get(i) + "' AND shortId = '" + shortId + "'", Likes.class);
+
+                String concat = "$$$$$$$$$$$$$$$$ " + likesToDelete.get(i).getShortId() + " " + likesToDelete.get(i).getUserId();
+                Log.info(concat);
+                Hibernate.getInstance().delete(likesToDelete.get(0));
+            }
+        }catch (Exception e){
+            return false;
+        }
+
+
+        return true;
     }
 
 

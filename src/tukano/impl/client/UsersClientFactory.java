@@ -14,7 +14,7 @@ public class UsersClientFactory {
 	static Discovery discovery = Discovery.getInstance();
 
 	public static Users getClient() {
-		var Uri = discovery.findUrisOf("users", 1);
+		var Uri = discovery.findUrisOf(SERVICE, 1);
 		var serverURI = Uri[0];
 		if( String.valueOf(serverURI).endsWith("rest"))
 			return new RestUsersClient(serverURI);

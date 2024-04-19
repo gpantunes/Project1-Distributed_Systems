@@ -131,4 +131,14 @@ public class RestShortsClient extends RestClient implements Shorts {
 		});
 	}
 
+	@Override
+	public Result<Void> deleteFollows(String userId) {
+		Response r = target
+				.path(userId)
+				.request()
+				.accept(MediaType.APPLICATION_JSON)
+				.delete();
+		return super.responseContents(r, Status.NO_CONTENT, null);
+	}
+
 }

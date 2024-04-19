@@ -106,8 +106,6 @@ public class JavaUsers implements tukano.api.java.Users {
 		if (badParam(pwd) || wrongPassword(user, pwd))
 			return error(FORBIDDEN);
 
-		Hibernate.getInstance().delete(user);
-
 		var shortList = client.getShorts(userId).value();
 
 		Log.info("%%%%%%%%%%%% antes de apagar shorts");
@@ -116,7 +114,11 @@ public class JavaUsers implements tukano.api.java.Users {
 			client.deleteShort(shortList.get(i), pwd);
 		}
 
+		client.deleteFollows(userId);
+
 		Log.info("%%%%%%%%%%%% depois de apagar shorts");
+
+		Hibernate.getInstance().delete(user);
 
 		return ok(user);
 	}

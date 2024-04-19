@@ -124,4 +124,11 @@ public interface Shorts {
 	 *  FORBIDDEN if the password is incorrect
 	 */
 	Result<List<String>> getFeed(String userId, String password);
+
+	/**
+	 *
+	 * @param userId
+	 * @return
+	 */
+	Result<Void> deleteFollows(String userId);
 }

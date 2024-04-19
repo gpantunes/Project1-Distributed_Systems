@@ -59,4 +59,9 @@ public class RetryShortsClient extends RetryClient implements Shorts {
 		return reTry(() -> impl.getFeed(userId, password));
 	}
 
+	@Override
+	public Result<Void> deleteFollows(String userId) {
+		return reTry(() -> impl.deleteFollows(userId));
+	}
+
 }

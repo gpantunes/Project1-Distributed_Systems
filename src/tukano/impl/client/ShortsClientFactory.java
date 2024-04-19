@@ -24,7 +24,7 @@ public class ShortsClientFactory {
 	static Discovery discovery = Discovery.getInstance();
 
 	public static Shorts getClient() {
-		var Uri = discovery.findUrisOf("users", 1);
+		var Uri = discovery.findUrisOf(SERVICE, 1);
 		var serverURI = Uri[0];
 		if( String.valueOf(serverURI).endsWith("rest"))
 			return new RestShortsClient(serverURI);

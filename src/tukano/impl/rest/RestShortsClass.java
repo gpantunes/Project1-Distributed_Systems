@@ -78,9 +78,16 @@ public class RestShortsClass implements RestShorts{
 
     @Override
     public List<String> getFeed(String userId, String password) {
-        Log.info(String.format("REST get feed " + userId));
+        Log.info("REST get feed " + userId);
 
         return checkResult(shortServer.getFeed(userId, password));
+    }
+
+    @Override
+    public void deleteFollows(String userId) {
+        Log.info("REST delete follows " + userId);
+
+        checkResult(shortServer.deleteFollows(userId));
     }
 
 
