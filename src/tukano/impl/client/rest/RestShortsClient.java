@@ -31,7 +31,7 @@ public class RestShortsClient extends RestClient implements Shorts {
 	@Override
 	public Result<Short> createShort(String userId, String password) {
 		Response r = target
-				.path("/{" + userId + "}")
+				.path(userId)
 				.queryParam(PASSWORD, password)
 				.request()
 				.accept(MediaType.APPLICATION_JSON)
@@ -43,7 +43,7 @@ public class RestShortsClient extends RestClient implements Shorts {
 	@Override
 	public Result<Void> deleteShort(String shortId, String password) {
 		Response r = target
-				.path("/{" + shortId + "}")
+				.path(shortId)
 				.queryParam(PASSWORD, password)
 				.request()
 				.accept(MediaType.APPLICATION_JSON)
@@ -53,8 +53,7 @@ public class RestShortsClient extends RestClient implements Shorts {
 
 	@Override
 	public Result<Short> getShort(String shortId) {
-		Response r = target.path("/")
-				.path("{" + shortId + "}")
+		Response r = target.path(shortId)
 				.request()
 				.accept(MediaType.APPLICATION_JSON)
 				.get();

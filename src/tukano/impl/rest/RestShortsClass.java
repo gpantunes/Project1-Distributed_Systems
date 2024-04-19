@@ -45,7 +45,7 @@ public class RestShortsClass implements RestShorts, Serializable {
     public List<String> getShorts(String userId) {
         Log.info(String.format("REST get shorts " + userId));
 
-        return (List<String>) checkResult(shortServer.getShort(userId));
+        return (List<String>) checkResult(shortServer.getShorts(userId));
     }
 
     @Override

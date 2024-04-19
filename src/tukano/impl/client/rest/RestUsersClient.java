@@ -45,7 +45,7 @@ public class RestUsersClient extends RestClient implements Users {
 
 	@Override
 	public Result<User> updateUser(String userId, String password, User user) {
-		Response r = target.path("/{" + userId + "}")
+		Response r = target.path(userId)
 				.queryParam(PASSWORD, password)
 				.request()
 				.accept(MediaType.APPLICATION_JSON)
@@ -57,7 +57,7 @@ public class RestUsersClient extends RestClient implements Users {
 
 	@Override
 	public Result<User> deleteUser(String userId, String password) {
-		Response r = target.path("/{" + userId + "}")
+		Response r = target.path(userId)
 				.queryParam(PASSWORD, password)
 				.request()
 				.accept(MediaType.APPLICATION_JSON)
