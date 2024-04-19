@@ -20,6 +20,8 @@ public class ShortsClientFactory {
 
 	private static final long CACHE_CAPACITY = 10;
 
+	static Discovery discovery = Discovery.getInstance();
+
 	static LoadingCache<URI, Shorts> shorts = CacheBuilder.newBuilder().maximumSize(CACHE_CAPACITY)
 			.build(new CacheLoader<>() {
 				@Override

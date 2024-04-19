@@ -48,6 +48,8 @@ public class JavaUsers implements tukano.api.java.Users {
 
 		User user = userList.get(0);
 
+		Log.info("############################ pawword:" + pwd);
+
 		if (badParam(pwd) || wrongPassword(user, pwd))
 			return error(FORBIDDEN);
 		else

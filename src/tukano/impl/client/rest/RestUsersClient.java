@@ -15,7 +15,7 @@ import tukano.api.rest.RestUsers;
 import tukano.api.service.util.Result;
 
 public class RestUsersClient extends RestClient implements Users {
-	private static final String PASSWORD = "password";
+	private static final String PASSWORD = "pwd";
 	private static final String QUERY = "query";
 
 	public RestUsersClient(URI serverUri) {
@@ -34,7 +34,7 @@ public class RestUsersClient extends RestClient implements Users {
 
 	@Override
 	public Result<User> getUser(String userId, String password) {
-		Response r = target.path("/{" + userId + "}")
+		Response r = target.path(userId)
 				.queryParam(PASSWORD, password)
 				.request()
 				.accept(MediaType.APPLICATION_JSON)

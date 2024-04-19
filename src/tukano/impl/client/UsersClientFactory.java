@@ -11,15 +11,15 @@ public class UsersClientFactory {
 
 	private static final long CACHE_CAPACITY = 10;
 
-	static Discovery discovery = new Discovery();
+	static Discovery discovery = Discovery.getInstance();
 
 	public static Users getClient() {
 		var Uri = discovery.findUrisOf("users", 1);
 		var serverURI = Uri[0];
 		if( String.valueOf(serverURI).endsWith("rest"))
-			return new RestUsersClient( serverURI );
+			return new RestUsersClient(serverURI);
         else
-			return null;//new GrpcUsersClient( serverURI );
+			return null;//new GrpcUsersClient(serverURI);
 	}
 }
 

@@ -11,12 +11,14 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Supplier;
 import java.util.logging.Logger;
 
 import tukano.api.Follow;
 import tukano.api.Likes;
 import tukano.api.Short;
 import tukano.api.User;
+import tukano.api.java.Users;
 import tukano.api.service.util.Result;
 import tukano.impl.Hibernate;
 import tukano.impl.client.UsersClientFactory;
@@ -27,31 +29,32 @@ public class JavaShorts implements tukano.api.java.Shorts {
 	final ExecutorService executor = Executors.newCachedThreadPool();
     private static Logger Log = Logger.getLogger(JavaShorts.class.getName());
 
-    Discovery discovery = new Discovery();
+    Discovery discovery = Discovery.getInstance();
 
-    //URI[] userUris = discovery.findUrisOf("users", 1);
-    URI[] blobUris = discovery.findUrisOf("blobs", 1);
+    //URI[] blobUris = discovery.findUrisOf("blobs", 1);
+
+    Users client = UsersClientFactory.getClient();
 
     @Override
     public Result<Short> createShort(String userId, String password) {
-        var client = UsersClientFactory.getClient();
-
         Log.info("############################# antes de ir buscar o user");
 
         var result = client.getUser(userId, password);
 
         Log.info("############################# depois de ir buscar o user");
 
-        if(!result.isOK())
+        if(!result.isOK()) {
+            Log.info(String.valueOf(error(result.error())));
             return Result.error(result.error());
+        }
 
         try {
             String shortId = String.valueOf(UUID.randomUUID());
-            String blobId = blobUris[0] + "/blobs/" + shortId;
+            String blobId =  "/blobs/" + shortId;
 
-            Short vid = new Short(userId, shortId, blobId);
+            Short vid = new Short(shortId, userId, "1");
 
-            Hibernate.getInstance().persist(vid);
+            Hibernate.getInstance().persist(vid);  //blobUris[0]
 
             return ok(vid);
         }catch (Exception e){
@@ -201,8 +204,26 @@ public class JavaShorts implements tukano.api.java.Shorts {
 
     @Override
     public Result<List<String>> getFeed(String userId, String password) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getFeed'");
+        Log.info("############################# antes de ir buscar o user");
+
+        var result = client.getUser(userId, password);
+
+        Log.info("############################# depois de ir buscar o user");
+
+        if(!result.isOK()) {
+            Log.info(String.valueOf(error(result.error())));
+            return Result.error(result.error());
+        }
+
+        var shortList = Hibernate.getInstance().sql("SELECT * FROM Short WHERE userId = '"
+                + userId + "'", Short.class);
+        List<String> shortIdList = new ArrayList<>(shortList.size());
+
+        for(int i = 0; i < shortList.size(); i++)
+            shortIdList.add(i, shortList.get(i).getShortId());
+
+        return ok(shortIdList);
+
     }
 
     private boolean badParam(String str) {
