@@ -79,7 +79,7 @@ public interface RestShorts {
 	void deleteFollows(@PathParam(USER_ID) String userId);*/
 
 	@DELETE
-	@Path("/{" + USER_ID + "}")
+	@Path("/{" + USER_ID + "}" + LIKES)
 	@Consumes(MediaType.APPLICATION_JSON)
 	void deleteLikes(@PathParam(USER_ID) String userId);
 }

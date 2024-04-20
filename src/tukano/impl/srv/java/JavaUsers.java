@@ -106,24 +106,25 @@ public class JavaUsers implements tukano.api.java.Users {
 		if (badParam(pwd) || wrongPassword(user, pwd))
 			return error(FORBIDDEN);
 
-		var likesResult = client.deleteLikes(userId);
+		/*var likesResult = client.deleteLikes(userId);
 
-		Log.info("//////////////////// resultado dos likes " + likesResult.isOK());
+		Log.info("//////////////////// resultado dos likes " + likesResult.isOK());*/
 
-		if(!likesResult.isOK()) {
-			Log.info("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" + error(likesResult.error()));
-			return Result.error(likesResult.error());
-		}
+		/*Result<Void> deleteLikesResult = client.deleteLikes(userId);
 
-		Log.info("{{{{{{{{{{{{{{{ antes de chamar o delete short " + pwd);
+		if (!deleteLikesResult.isOK()) {
+			Log.info("Error deleting shorts for user: " + userId);
+			return Result.error(Result.ErrorCode.INTERNAL_ERROR);
+		}else Log.info("{{{{{{{{{{{{{{{ antes de chamar o delete short " + pwd);*/
 
-		/*var shortList = client.getShorts(userId).value();
+
+		var shortList = client.getShorts(userId).value();
 
 		for(int i = 0; i < shortList.size(); i++){
 			client.deleteShort(shortList.get(i), pwd);
 		}
 
-		Log.info("%%%%%%%%%%%% depois de apagar shorts");*/
+		Log.info("%%%%%%%%%%%% depois de apagar shorts");
 
 		Hibernate.getInstance().delete(user);
 

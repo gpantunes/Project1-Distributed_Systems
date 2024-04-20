@@ -64,8 +64,10 @@ public class JavaShorts implements tukano.api.java.Shorts {
             return error(BAD_REQUEST);
 
         Short vid = getShort(shortId).value();
-        String ownerId = vid.getOwnerId();
+        if(vid == null)
+            return error(NOT_FOUND);
 
+        String ownerId = vid.getOwnerId();
         Log.info("%%%%%%%%%%%%%%%%%%%% " + ownerId);
 
         var result = client.getUser(ownerId, password);
@@ -74,10 +76,9 @@ public class JavaShorts implements tukano.api.java.Shorts {
             return Result.error(result.error());
         }
 
-        if(vid == null)
-            return error(NOT_FOUND);
-
         Hibernate.getInstance().delete(vid);
+
+        Log.info("################## apagou o short");
 
         return ok();
     }
@@ -302,7 +303,7 @@ public class JavaShorts implements tukano.api.java.Shorts {
         }
 
         Log.info("$$$$$$$$$$$$$$$$ likes apagados");
-        return ok();
+        return Result.ok(null);
     }
 
 

@@ -133,7 +133,7 @@ public class RestShortsClient extends RestClient implements Shorts {
 	@Override
 	public Result<Void> deleteLikes(String userId) {
 		Response r = target
-				.path(userId)
+				.path(userId + LIKES)
 				.request()
 				.accept(MediaType.APPLICATION_JSON)
 				.delete();
