@@ -26,4 +26,12 @@ public class Likes {
         return shortId;
     }
 
+    public void setUserId(String userId){
+        this.userId = userId;
+    }
+
+    public void setShortId(String shortId){
+        this.shortId = shortId;
+    }
+
 }

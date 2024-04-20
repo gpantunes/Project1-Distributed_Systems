@@ -131,4 +131,11 @@ public interface Shorts {
 	 * @return
 	 */
 	//Result<Void> deleteFollows(String userId);
+
+	/**
+	 *
+	 * @param userId
+	 * @return
+	 */
+	Result<Void> deleteLikes(String userId);
 }

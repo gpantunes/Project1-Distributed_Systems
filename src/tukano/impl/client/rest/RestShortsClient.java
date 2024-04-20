@@ -44,7 +44,7 @@ public class RestShortsClient extends RestClient implements Shorts {
 	public Result<Void> deleteShort(String shortId, String password) {
 		Response r = target
 				.path(shortId)
-				.queryParam(PASSWORD, password)
+				.queryParam(PWD, password)
 				.request()
 				.delete();
 		return super.responseContents(r, Status.NO_CONTENT, null);
@@ -128,6 +128,16 @@ public class RestShortsClient extends RestClient implements Shorts {
 				.get();
 		return super.responseContents(r, Status.OK, new GenericType<List<String>>() {
 		});
+	}
+
+	@Override
+	public Result<Void> deleteLikes(String userId) {
+		Response r = target
+				.path(userId)
+				.request()
+				.accept(MediaType.APPLICATION_JSON)
+				.delete();
+		return super.responseContents(r, Status.NO_CONTENT, null);
 	}
 
 	/*@Override

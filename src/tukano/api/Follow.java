@@ -26,4 +26,12 @@ public class Follow {
         return followedId;
     }
 
+    public void setFollowerId(String followerId){
+        this.followerId = followerId;
+    }
+
+    public void setFollowedId(String followedId){
+        this.followedId = followedId;
+    }
+
 }

@@ -58,13 +58,16 @@ public class JavaShorts implements tukano.api.java.Shorts {
 
     @Override
     public Result<Void> deleteShort(String shortId, String password) {
-        Log.info("##################### deleteShort foi chamado");
+        Log.info("##################### deleteShort foi chamado " + shortId + " ###### " + password);
 
         if(badParam(shortId) || badParam(password))
             return error(BAD_REQUEST);
 
         Short vid = getShort(shortId).value();
         String ownerId = vid.getOwnerId();
+
+        Log.info("%%%%%%%%%%%%%%%%%%%% " + ownerId);
+
         var result = client.getUser(ownerId, password);
         if(!result.isOK()) {
             Log.info("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" + error(result.error()));
@@ -73,12 +76,6 @@ public class JavaShorts implements tukano.api.java.Shorts {
 
         if(vid == null)
             return error(NOT_FOUND);
-
-        /*var deleteResult = deleteShortLikes(shortId, password);
-        if(!deleteResult.isOK()) {
-            Log.info("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" + error(deleteResult.error()));
-            return Result.error(result.error());
-        }*/
 
         Hibernate.getInstance().delete(vid);
 
@@ -224,7 +221,6 @@ public class JavaShorts implements tukano.api.java.Shorts {
 
         String ownerId = vid.getOwnerId();
         var result = client.getUser(ownerId, password);
-
         if(!result.isOK()) {
             Log.info("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" + error(result.error()));
             return Result.error(result.error());
@@ -283,6 +279,32 @@ public class JavaShorts implements tukano.api.java.Shorts {
 
     }
 
+    @Override
+    public Result<Void> deleteLikes(String userId) {
+        Log.info("$$$$$$$$$$$$$ delete likes foi chamado");
+
+        var likeList = Hibernate.getInstance().sql("SELECT * FROM Likes WHERE userId = '"
+                + userId + "'", Likes.class);
+
+        for(int i = 0; i < likeList.size(); i++){
+            Log.info("%%%%%%%%%%%%%% like info " + likeList.get(i).getUserId() + " " + likeList.get(i).getShortId());
+            Hibernate.getInstance().delete(likeList.get(i));
+        }
+
+        likeList = Hibernate.getInstance().sql("SELECT * FROM Likes WHERE userId = '"
+                + userId + "'", Likes.class);
+
+        Log.info("]]]]]]]]]]]]]]]]]]]]]]]]] like list size " + likeList.size());
+
+        for(int j = 0; j < likeList.size(); j++){
+            Log.info("}}}}}}}}}}}}}}}}}}}}} likes que ficaram " + likeList.get(j).getUserId()
+                    + " " + likeList.get(j).getShortId());
+        }
+
+        Log.info("$$$$$$$$$$$$$$$$ likes apagados");
+        return ok();
+    }
+
 
     /*@Override
     public Result<Void> deleteFollows(String userId) {
@@ -304,6 +326,8 @@ public class JavaShorts implements tukano.api.java.Shorts {
     }*/
 
 
+
+
     public class ShortTimestampComparator implements Comparator<Short> {
         @Override
         public int compare(Short s1, Short s2) {
@@ -316,29 +340,4 @@ public class JavaShorts implements tukano.api.java.Shorts {
     private boolean badParam(String str) {
         return str == null;
     }
-
-
-
-    private Result<Void> deleteShortLikes(String shortId, String password){
-        Log.info("############### delete likes foi chamado " + shortId);
-
-        try{
-            var likeList = likes(shortId, password).value();
-
-            for(int i = 0; i < likeList.size(); i++){
-                var likesToDelete = Hibernate.getInstance().sql("SELECT * FROM Likes WHERE userId = '"
-                        + likeList.get(i) + "' AND shortId = '" + shortId + "'", Likes.class);
-
-                String concat = "$$$$$$$$$$$$$$$$ " + likesToDelete.get(i).getShortId() + " " + likesToDelete.get(i).getUserId();
-                Log.info(concat);
-                Hibernate.getInstance().delete(likesToDelete.get(0));
-            }
-        }catch (Exception e){
-            return Result.error(INTERNAL_ERROR);
-        }
-
-        return ok();
-    }
-
-
 }

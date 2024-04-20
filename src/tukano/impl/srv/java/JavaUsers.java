@@ -56,8 +56,11 @@ public class JavaUsers implements tukano.api.java.Users {
 
 		if (badParam(pwd) || wrongPassword(user, pwd))
 			return error(FORBIDDEN);
-		else
+		else{
+			Log.info("[[[[[[[[[[[[[[[[[[o get user passou " + user.getUserId());
 			return ok(user);
+		}
+
 	}
 
 	@Override
@@ -92,26 +95,35 @@ public class JavaUsers implements tukano.api.java.Users {
 
 	@Override
 	public Result<User> deleteUser(String userId, String pwd) {
+		Log.info("################# delete user foi chamado");
 		if (badParam(userId))
 			return error(BAD_REQUEST);
 
 		var userList = Hibernate.getInstance().sql("SELECT * FROM User WHERE userId = '" + userId + "'", User.class);
-
 		if(userList.isEmpty())
 			return error(NOT_FOUND);
-
 		User user = userList.get(0);
-
 		if (badParam(pwd) || wrongPassword(user, pwd))
 			return error(FORBIDDEN);
 
-		var shortList = client.getShorts(userId).value();
+		var likesResult = client.deleteLikes(userId);
+
+		Log.info("//////////////////// resultado dos likes " + likesResult.isOK());
+
+		if(!likesResult.isOK()) {
+			Log.info("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" + error(likesResult.error()));
+			return Result.error(likesResult.error());
+		}
+
+		Log.info("{{{{{{{{{{{{{{{ antes de chamar o delete short " + pwd);
+
+		/*var shortList = client.getShorts(userId).value();
 
 		for(int i = 0; i < shortList.size(); i++){
 			client.deleteShort(shortList.get(i), pwd);
 		}
 
-		Log.info("%%%%%%%%%%%% depois de apagar shorts");
+		Log.info("%%%%%%%%%%%% depois de apagar shorts");*/
 
 		Hibernate.getInstance().delete(user);
 
