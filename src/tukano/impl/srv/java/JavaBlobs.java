@@ -23,8 +23,6 @@ public class JavaBlobs implements tukano.api.java.Blobs{
 
     @Override
     public Result<Void> upload(String blobId, byte[] bytes) {
-        Log.info("####################### upload foi chamado");
-
         String filePath = "blobFiles/" + blobId;
         String directoryPath = "blobFiles/";
 
@@ -33,17 +31,13 @@ public class JavaBlobs implements tukano.api.java.Blobs{
             if (!Files.exists(directory))
                 Files.createDirectories(directory);
 
-            Log.info("########### criou a diretoria");
-
             // Convert byte array to Path object
             Path path = Paths.get(filePath);
 
             // Write the bytes to the file
             Files.write(path, bytes);
 
-            Log.info("################# ficheiro escrito");
         } catch (IOException e) {
-            Log.info("################ escrita falhou " + e.getMessage());
             return Result.error(INTERNAL_ERROR);
         }
 
@@ -67,7 +61,6 @@ public class JavaBlobs implements tukano.api.java.Blobs{
 
             content = Files.readAllBytes(path);
         }catch (IOException e){
-            Log.info("################# leitura falhou");
             return Result.error(INTERNAL_ERROR);
         }
 

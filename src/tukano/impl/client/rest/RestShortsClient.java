@@ -129,25 +129,4 @@ public class RestShortsClient extends RestClient implements Shorts {
 		return super.responseContents(r, Status.OK, new GenericType<List<String>>() {
 		});
 	}
-
-	/*@Override
-	public Result<Void> deleteLikes(String userId) {
-		Response r = target
-				.path(userId + LIKES)
-				.request()
-				.accept(MediaType.APPLICATION_JSON)
-				.delete();
-		return super.responseContents(r, Status.NO_CONTENT, null);
-	}*/
-
-	/*@Override
-	public Result<Void> deleteFollows(String userId) {
-		Response r = target
-				.path(userId)
-				.request()
-				.accept(MediaType.APPLICATION_JSON)
-				.delete();
-		return super.responseContents(r, Status.NO_CONTENT, null);
-	}*/
-
 }

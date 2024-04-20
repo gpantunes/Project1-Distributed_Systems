@@ -9,8 +9,6 @@ import tukano.api.service.util.Result;
 import tukano.impl.srv.java.JavaShorts;
 import tukano.impl.srv.java.JavaUsers;
 
-
-import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -82,20 +80,6 @@ public class RestShortsClass implements RestShorts{
 
         return checkResult(shortServer.getFeed(userId, password));
     }
-
-    /*@Override
-    public void deleteLikes(String userId) {
-        Log.info("REST delete likes " + userId);
-
-        checkResult(shortServer.deleteLikes(userId));
-    }*/
-
-    /*@Override
-    public void deleteFollows(String userId) {
-        Log.info("REST delete follows " + userId);
-
-        checkResult(shortServer.deleteFollows(userId));
-    }*/
 
 
     protected <T> T checkResult(Result<T> result){

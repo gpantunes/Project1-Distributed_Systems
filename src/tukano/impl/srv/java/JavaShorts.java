@@ -8,8 +8,6 @@ import java.net.URI;
 import java.util.*;
 import java.util.Comparator;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 import tukano.api.Follow;
@@ -22,7 +20,6 @@ import tukano.impl.client.UsersClientFactory;
 import tukano.impl.discovery.Discovery;
 
 public class JavaShorts implements tukano.api.java.Shorts {
-	final ExecutorService executor = Executors.newCachedThreadPool();
     private static Logger Log = Logger.getLogger(JavaShorts.class.getName());
 
     Discovery discovery = Discovery.getInstance();
@@ -31,11 +28,7 @@ public class JavaShorts implements tukano.api.java.Shorts {
 
     @Override
     public Result<Short> createShort(String userId, String password) {
-        Log.info("############################# antes de ir buscar o user");
-
         var result = client.getUser(userId, password);
-
-        Log.info("############################# depois de ir buscar o user");
 
         if(!result.isOK()) {
             Log.info(String.valueOf(error(result.error())));
@@ -43,14 +36,8 @@ public class JavaShorts implements tukano.api.java.Shorts {
         }
 
         try {
-            for(int i = 0; i < blobUris.length; i++){
-                Log.info("$$$$$$$$$$$$$$ blob uris + " + blobUris[i]);
-            }
-
             discovery.addBlobUris(blobUris);
             URI nextUri = discovery.getNextServer();
-
-            Log.info("&&&&&&&&&&&&&&&&&&&&&& next uri" + nextUri);
 
             String shortId = String.valueOf(UUID.randomUUID());
             String blobId =  nextUri + "/blobs/" + shortId;
@@ -69,8 +56,6 @@ public class JavaShorts implements tukano.api.java.Shorts {
 
     @Override
     public Result<Void> deleteShort(String shortId, String password) {
-        Log.info("##################### deleteShort foi chamado " + shortId + " ###### " + password);
-
         if(badParam(shortId) || badParam(password))
             return error(BAD_REQUEST);
 
@@ -79,25 +64,19 @@ public class JavaShorts implements tukano.api.java.Shorts {
             return error(NOT_FOUND);
 
         String ownerId = vid.getOwnerId();
-        Log.info("%%%%%%%%%%%%%%%%%%%% " + ownerId);
 
         var result = client.getUser(ownerId, password);
-        if(!result.isOK()) {
-            Log.info("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" + error(result.error()));
+        if(!result.isOK())
             return Result.error(result.error());
-        }
+
 
         Hibernate.getInstance().delete(vid);
-
-        Log.info("################## apagou o short");
 
         return ok();
     }
 
     @Override
     public Result<Short> getShort(String shortId) {
-        Log.info("##################### getShort foi chamado");
-
         if(badParam(shortId))
             return error(BAD_REQUEST);
 
@@ -114,8 +93,6 @@ public class JavaShorts implements tukano.api.java.Shorts {
         if(badParam(userId))
             return error(BAD_REQUEST);
 
-        Log.info("##################### getShorts foi chamado");
-
        var shortList = Hibernate.getInstance().sql("SELECT * FROM Short WHERE ownerId = '" + userId + "'", Short.class);
        List<String> idList = new ArrayList<>(shortList.size());
 
@@ -127,17 +104,13 @@ public class JavaShorts implements tukano.api.java.Shorts {
 
     @Override
     public Result<Void> follow(String userId1, String userId2, boolean isFollowing, String password) {
-
-        Log.info("##################### follow foi chamado");
-
         if(badParam(userId1) || badParam(userId2) || badParam(password))
             return error(BAD_REQUEST);
 
         var result1 = client.getUser(userId1, password);
-        if(!result1.isOK()) {
-            Log.info("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" + error(result1.error()));
+        if(!result1.isOK())
             return Result.error(result1.error());
-        }
+
 
         var follow = Hibernate.getInstance().sql("SELECT * FROM Follow WHERE followerId = '"
                 + userId1  + "' AND followedId = '" + userId2 + "'", Follow.class);
@@ -147,7 +120,6 @@ public class JavaShorts implements tukano.api.java.Shorts {
                 Hibernate.getInstance().persist(new Follow(userId1, userId2));
             else return error(CONFLICT);
         } else {
-            Log.info("############ vai apagar um follow" + follow.isEmpty());
             if(!follow.isEmpty())
                 Hibernate.getInstance().delete(follow.get(0));
         }
@@ -157,17 +129,13 @@ public class JavaShorts implements tukano.api.java.Shorts {
 
     @Override
     public Result<List<String>> followers(String userId, String password) {
-        Log.info("##################### followers foi chamado");
-
         if(badParam(userId) || badParam(password))
             return error(BAD_REQUEST);
 
         var result = client.getUser(userId, password);
 
-        if(!result.isOK()) {
-            Log.info("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" + error(result.error()));
+        if(!result.isOK())
             return Result.error(result.error());
-        }
 
         var followerList = Hibernate.getInstance().sql("SELECT * FROM Follow WHERE followedId = '"
                 + userId + "'", Follow.class);
@@ -182,8 +150,6 @@ public class JavaShorts implements tukano.api.java.Shorts {
 
     @Override
     public Result<Void> like(String shortId, String userId, boolean isLiked, String password) {
-        Log.info("##################### like foi chamado");
-
         if(badParam(shortId) || badParam(userId) || badParam(password))
             return error(BAD_REQUEST);
 
@@ -191,10 +157,9 @@ public class JavaShorts implements tukano.api.java.Shorts {
         var vid = getShort(shortId).value();
         int totalLikes = vid.getTotalLikes();
 
-        if(!result.isOK()) {
-            Log.info("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" + error(result.error()));
+        if(!result.isOK())
             return Result.error(result.error());
-        }
+
 
         var likeList = Hibernate.getInstance().sql("SELECT * FROM Likes WHERE userId = '"
                 + userId + "' AND shortId = '" + shortId + "'" , Likes.class);
@@ -203,8 +168,8 @@ public class JavaShorts implements tukano.api.java.Shorts {
             if(!likeList.isEmpty())
                 return error(CONFLICT);
 
-            var userLikes = Hibernate.getInstance().sql("SELECT * FROM Likes WHERE userId = '"
-                    + userId + "'", Likes.class);
+            /*var userLikes = Hibernate.getInstance().sql("SELECT * FROM Likes WHERE userId = '"
+                    + userId + "'", Likes.class);*/
 
             Hibernate.getInstance().persist(new Likes(userId, shortId));
             vid.setTotalLikes(totalLikes + 1);
@@ -222,8 +187,6 @@ public class JavaShorts implements tukano.api.java.Shorts {
 
     @Override
     public Result<List<String>> likes(String shortId, String password) {
-        Log.info("##################### likes foi chamado");
-
         if(badParam(shortId) || badParam(password))
             return error(BAD_REQUEST);
 
@@ -233,15 +196,12 @@ public class JavaShorts implements tukano.api.java.Shorts {
 
         String ownerId = vid.getOwnerId();
         var result = client.getUser(ownerId, password);
-        if(!result.isOK()) {
-            Log.info("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" + error(result.error()));
+        if(!result.isOK())
             return Result.error(result.error());
-        }
+
 
         var likeList = Hibernate.getInstance().sql("SELECT * FROM Likes WHERE shortId = '"
                 + shortId + "'", Likes.class);
-
-        Log.info("%%%%%%%%%%%%%%%%%%%% like list size " + likeList.size());
 
         List<String> likeIdList = new ArrayList<>();
         for(int i = 0; i < likeList.size(); i++){
@@ -253,12 +213,9 @@ public class JavaShorts implements tukano.api.java.Shorts {
 
     @Override
     public Result<List<String>> getFeed(String userId, String password) {
-        Log.info("##################### getFeed foi chamado");
-
         var result = client.getUser(userId, password);
 
         if(!result.isOK()) {
-            Log.info("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" + error(result.error()));
             return Result.error(result.error());
         }
 
@@ -290,55 +247,6 @@ public class JavaShorts implements tukano.api.java.Shorts {
         return ok(shortIdList);
 
     }
-
-    /*@Override
-    public Result<Void> deleteLikes(String userId) {
-        Log.info("$$$$$$$$$$$$$ delete likes foi chamado");
-
-        var likeList = Hibernate.getInstance().sql("SELECT * FROM Likes WHERE userId = '"
-                + userId + "'", Likes.class);
-
-        for(int i = 0; i < likeList.size(); i++){
-            Log.info("%%%%%%%%%%%%%% like info " + likeList.get(i).getUserId() + " " + likeList.get(i).getShortId());
-            Hibernate.getInstance().delete(likeList.get(i));
-        }
-
-        likeList = Hibernate.getInstance().sql("SELECT * FROM Likes WHERE userId = '"
-                + userId + "'", Likes.class);
-
-        Log.info("]]]]]]]]]]]]]]]]]]]]]]]]] like list size " + likeList.size());
-
-        for(int j = 0; j < likeList.size(); j++){
-            Log.info("}}}}}}}}}}}}}}}}}}}}} likes que ficaram " + likeList.get(j).getUserId()
-                    + " " + likeList.get(j).getShortId());
-        }
-
-        Log.info("$$$$$$$$$$$$$$$$ likes apagados");
-        return Result.ok(null);
-    }*/
-
-
-    /*@Override
-    public Result<Void> deleteFollows(String userId) {
-        Log.info("################# delete follow foi chamado " + userId);
-
-        var followedList = Hibernate.getInstance().sql("SELECT * FROM Follow WHERE followerId = '"
-                + userId + "'", Follow.class);
-        var followerList = Hibernate.getInstance().sql("SELECT * FROM Follow WHERE followedId = '"
-                + userId + "'", Follow.class);
-
-        Log.info("quantos segue: " + followedList.size() + " quantos seguidores: " + followerList.size());
-
-        Hibernate.getInstance().delete(followedList);
-        Hibernate.getInstance().delete(followerList);
-
-        Log.info("################## delete de follows terminou");
-
-        return ok();
-    }*/
-
-
-
 
     public class ShortTimestampComparator implements Comparator<Short> {
         @Override
