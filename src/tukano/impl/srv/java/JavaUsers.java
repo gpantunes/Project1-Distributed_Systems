@@ -56,7 +56,7 @@ public class JavaUsers implements tukano.api.java.Users {
 
 	@Override
 	public Result<User> updateUser(String userId, String pwd, User user) {
-		if (badParam(userId))
+		if (badParam(userId) || user.getuserId != null)
 			return error(BAD_REQUEST);
 
 		var userList = Hibernate.getInstance().sql("SELECT * FROM User WHERE userId = '" + userId + "'", User.class);
