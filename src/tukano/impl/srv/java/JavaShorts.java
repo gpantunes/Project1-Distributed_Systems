@@ -26,7 +26,7 @@ public class JavaShorts implements tukano.api.java.Shorts {
     private static Logger Log = Logger.getLogger(JavaShorts.class.getName());
 
     Discovery discovery = Discovery.getInstance();
-    URI[] blobUris = discovery.findUrisOf("blobs", 1);
+    URI[] blobUris = discovery.findUrisOf("blobs", -1);
     Users client = UsersClientFactory.getClient();
 
     @Override
@@ -43,10 +43,21 @@ public class JavaShorts implements tukano.api.java.Shorts {
         }
 
         try {
+            for(int i = 0; i < blobUris.length; i++){
+                Log.info("$$$$$$$$$$$$$$ blob uris + " + blobUris[i]);
+            }
+
+            discovery.addBlobUris(blobUris);
+            URI nextUri = discovery.getNextServer();
+
+            Log.info("&&&&&&&&&&&&&&&&&&&&&& next uri" + nextUri);
+
             String shortId = String.valueOf(UUID.randomUUID());
-            String blobId =  blobUris[0] + "/blobs/" + shortId;
+            String blobId =  nextUri + "/blobs/" + shortId;
 
             Short vid = new Short(shortId, userId, blobId, System.currentTimeMillis(), 0);
+
+            discovery.updateBlobDistribution(nextUri);
 
             Hibernate.getInstance().persist(vid);
 
@@ -280,7 +291,7 @@ public class JavaShorts implements tukano.api.java.Shorts {
 
     }
 
-    @Override
+    /*@Override
     public Result<Void> deleteLikes(String userId) {
         Log.info("$$$$$$$$$$$$$ delete likes foi chamado");
 
@@ -304,7 +315,7 @@ public class JavaShorts implements tukano.api.java.Shorts {
 
         Log.info("$$$$$$$$$$$$$$$$ likes apagados");
         return Result.ok(null);
-    }
+    }*/
 
 
     /*@Override

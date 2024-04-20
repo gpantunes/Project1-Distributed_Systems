@@ -30,6 +30,8 @@ public class Discovery {
 	private static Discovery instance;
 	
 	final Map<String, Set<URI>> discoveries = new ConcurrentHashMap<>();
+
+	final Map<URI, Integer> blobDistribution = new ConcurrentHashMap<>();
 	
 	synchronized public static Discovery getInstance() {
 		if( instance == null ) {
@@ -121,5 +123,32 @@ public class Discovery {
 				x.printStackTrace();
 			}
 		}
-	}	
+	}
+
+	public void addBlobUris(URI[] uris){
+		for(int i = 0; i < uris.length; i++){
+			if(!blobDistribution.containsKey(uris[i]))
+				blobDistribution.put(uris[i], 0);
+		}
+	}
+
+	public void updateBlobDistribution(URI serverUri){
+		int totalBlobs = blobDistribution.remove(serverUri);
+
+		blobDistribution.put(serverUri, totalBlobs + 1);
+	}
+
+	public URI getNextServer() throws URISyntaxException {
+		URI serverUri = new URI("");
+		int lowestBlobNum = Integer.MAX_VALUE;
+
+		for (Map.Entry<URI, Integer> entry : blobDistribution.entrySet()) {
+			if(entry.getValue() < lowestBlobNum){
+				lowestBlobNum = entry.getValue();
+				serverUri = entry.getKey();
+			}
+		}
+
+		return serverUri;
+	}
 }

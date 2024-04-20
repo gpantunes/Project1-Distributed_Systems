@@ -75,9 +75,6 @@ public class JavaUsers implements tukano.api.java.Users {
 
 		User oldUser = userList.get(0);
 
-		if(user.getUserId() != null)
-			return error(BAD_REQUEST);
-
 		Log.info("(" + oldUser.getUserId() + ", " + oldUser.getPwd() + ", "
 				+ oldUser.getEmail() + ", " + oldUser.getDisplayName() + ")");
 
@@ -114,17 +111,17 @@ public class JavaUsers implements tukano.api.java.Users {
 
 		if (!deleteLikesResult.isOK()) {
 			Log.info("Error deleting shorts for user: " + userId);
-			return Result.error(Result.ErrorCode.INTERNAL_ERROR);
-		}else Log.info("{{{{{{{{{{{{{{{ antes de chamar o delete short " + pwd);*/
+			return Result.error(Result.ErrorCode.NOT_FOUND);
+		}else Log.info("{{{{{{{{{{{{{{{ antes de chamar o delete short " + pwd);
 
 
-		var shortList = client.getShorts(userId).value();
+		/*var shortList = client.getShorts(userId).value();
 
 		for(int i = 0; i < shortList.size(); i++){
 			client.deleteShort(shortList.get(i), pwd);
 		}
 
-		Log.info("%%%%%%%%%%%% depois de apagar shorts");
+		Log.info("%%%%%%%%%%%% depois de apagar shorts");*/
 
 		Hibernate.getInstance().delete(user);
 

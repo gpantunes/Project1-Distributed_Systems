@@ -39,19 +39,6 @@ abstract class RestClient extends RetryClient {
 	}
 
 	
-	protected <T> Result<T> verifyResponse(Response r, Status expected) {
-		try {
-			StatusType status = r.getStatusInfo();
-			if (status.equals(expected))
-				return ok();
-			else
-				return error(getErrorCodeFrom(status.getStatusCode()));
-		} finally {
-			r.close();
-		}
-	}
-
-	
 	protected <T> Result<T> responseContents(Response r, Status expected, GenericType<T> gtype) {
 		try {
 			StatusType status = r.getStatusInfo();

@@ -130,7 +130,7 @@ public class RestShortsClient extends RestClient implements Shorts {
 		});
 	}
 
-	@Override
+	/*@Override
 	public Result<Void> deleteLikes(String userId) {
 		Response r = target
 				.path(userId + LIKES)
@@ -138,7 +138,7 @@ public class RestShortsClient extends RestClient implements Shorts {
 				.accept(MediaType.APPLICATION_JSON)
 				.delete();
 		return super.responseContents(r, Status.NO_CONTENT, null);
-	}
+	}*/
 
 	/*@Override
 	public Result<Void> deleteFollows(String userId) {

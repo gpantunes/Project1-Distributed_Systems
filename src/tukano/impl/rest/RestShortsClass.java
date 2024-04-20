@@ -83,12 +83,12 @@ public class RestShortsClass implements RestShorts{
         return checkResult(shortServer.getFeed(userId, password));
     }
 
-    @Override
+    /*@Override
     public void deleteLikes(String userId) {
         Log.info("REST delete likes " + userId);
 
         checkResult(shortServer.deleteLikes(userId));
-    }
+    }*/
 
     /*@Override
     public void deleteFollows(String userId) {
