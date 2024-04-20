@@ -17,16 +17,13 @@ public class RestShortsServer {
         System.setProperty("java.net.preferIPv4Stack", "true");
     }
 
-    private static Discovery discovery = new Discovery();
+    private static Discovery discovery = Discovery.getInstance();
     private static final String USER_SERVICE = "users";
     private static final String SHORT_SERVICE = "shorts";
     private static final String BLOB_SERVICE = "blobs";
 
     public static final int PORT = 4567;
     private static final String SERVER_URI_FMT = "http://%s:%s/rest";
-
-    private static URI[] userURI;
-    private static URI[] blobURI;
 
     public static void main(String[] args) {
         try {
@@ -41,8 +38,6 @@ public class RestShortsServer {
 
             discovery.announce(SHORT_SERVICE, serverURI);
 
-            userURI = discovery.findUrisOf(USER_SERVICE, 1);
-            blobURI = discovery.findUrisOf(BLOB_SERVICE, 1);
         } catch (Exception e) {
             Log.severe(e.getMessage());
         }

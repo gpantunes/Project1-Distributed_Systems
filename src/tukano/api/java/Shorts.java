@@ -130,5 +130,5 @@ public interface Shorts {
 	 * @param userId
 	 * @return
 	 */
-	Result<Void> deleteFollows(String userId);
+	//Result<Void> deleteFollows(String userId);
 }

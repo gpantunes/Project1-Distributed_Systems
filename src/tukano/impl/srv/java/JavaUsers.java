@@ -60,7 +60,6 @@ public class JavaUsers implements tukano.api.java.Users {
 			return ok(user);
 	}
 
-	//ter em atenção aos campos null do que não é para alterar
 	@Override
 	public Result<User> updateUser(String userId, String pwd, User user) {
 		if (badParam(userId))
@@ -108,13 +107,9 @@ public class JavaUsers implements tukano.api.java.Users {
 
 		var shortList = client.getShorts(userId).value();
 
-		Log.info("%%%%%%%%%%%% antes de apagar shorts");
-
 		for(int i = 0; i < shortList.size(); i++){
 			client.deleteShort(shortList.get(i), pwd);
 		}
-
-		client.deleteFollows(userId);
 
 		Log.info("%%%%%%%%%%%% depois de apagar shorts");
 
@@ -131,12 +126,6 @@ public class JavaUsers implements tukano.api.java.Users {
 		pattern = pattern.toLowerCase();
 
 		var hits = Hibernate.getInstance().sql("SELECT * FROM User WHERE LOWER(userId) LIKE '%" + pattern + "%'", User.class);
-
-		/*var hits = users.values()
-				.stream()
-				.filter(u -> u.getDisplayName().toLowerCase().contains(pattern.toLowerCase()))
-				.map(User::secureCopy)
-				.collect(Collectors.toList());*/
 
 		return ok(hits);
 	}

@@ -8,6 +8,7 @@ public class Follow {
 
     @Id
     private String followerId;
+    @Id
     private String followedId;
 
     public Follow(String followerId, String followedId){

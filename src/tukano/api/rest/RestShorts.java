@@ -73,8 +73,8 @@ public interface RestShorts {
 	@Produces(MediaType.APPLICATION_JSON)
 	List<String> getFeed( @PathParam(USER_ID) String userId, @QueryParam(PWD) String password);
 
-	@DELETE
+	/*@DELETE
 	@Path("/{" + USER_ID + "}")
 	@Consumes(MediaType.APPLICATION_JSON)
-	void deleteFollows(@PathParam(USER_ID) String userId);
+	void deleteFollows(@PathParam(USER_ID) String userId);*/
 }

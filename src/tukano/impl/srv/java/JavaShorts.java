@@ -74,9 +74,11 @@ public class JavaShorts implements tukano.api.java.Shorts {
         if(vid == null)
             return error(NOT_FOUND);
 
-        if(!deleteShortLikes(shortId, password))
-            Log.info("############## delete de likes falhou");
-
+        /*var deleteResult = deleteShortLikes(shortId, password);
+        if(!deleteResult.isOK()) {
+            Log.info("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" + error(deleteResult.error()));
+            return Result.error(result.error());
+        }*/
 
         Hibernate.getInstance().delete(vid);
 
@@ -282,7 +284,7 @@ public class JavaShorts implements tukano.api.java.Shorts {
     }
 
 
-    @Override
+    /*@Override
     public Result<Void> deleteFollows(String userId) {
         Log.info("################# delete follow foi chamado " + userId);
 
@@ -291,23 +293,15 @@ public class JavaShorts implements tukano.api.java.Shorts {
         var followerList = Hibernate.getInstance().sql("SELECT * FROM Follow WHERE followedId = '"
                 + userId + "'", Follow.class);
 
-        try{
-            for(int i = 0; i < followedList.size(); i++){
-                Hibernate.getInstance().delete(followedList.get(i));
-            }
+        Log.info("quantos segue: " + followedList.size() + " quantos seguidores: " + followerList.size());
 
-            for(int j = 0; j < followerList.size(); j++){
-                Hibernate.getInstance().delete(followerList.get(j));
-            }
-
-        }catch (Exception e){
-            return Result.error(INTERNAL_ERROR);
-        }
+        Hibernate.getInstance().delete(followedList);
+        Hibernate.getInstance().delete(followerList);
 
         Log.info("################## delete de follows terminou");
 
         return ok();
-    }
+    }*/
 
 
     public class ShortTimestampComparator implements Comparator<Short> {
@@ -325,7 +319,7 @@ public class JavaShorts implements tukano.api.java.Shorts {
 
 
 
-    private boolean deleteShortLikes(String shortId, String password){
+    private Result<Void> deleteShortLikes(String shortId, String password){
         Log.info("############### delete likes foi chamado " + shortId);
 
         try{
@@ -340,11 +334,10 @@ public class JavaShorts implements tukano.api.java.Shorts {
                 Hibernate.getInstance().delete(likesToDelete.get(0));
             }
         }catch (Exception e){
-            return false;
+            return Result.error(INTERNAL_ERROR);
         }
 
-
-        return true;
+        return ok();
     }
 
 

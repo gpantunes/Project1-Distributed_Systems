@@ -17,7 +17,7 @@ public class RestUsersServer {
         System.setProperty("java.net.preferIPv4Stack", "true");
     }
 
-    private static Discovery discovery = new Discovery();
+    private static Discovery discovery = Discovery.getInstance();
     private static final String USER_SERVICE = "users";
     private static final String SHORT_SERVICE = "shorts";
     private static final String BLOB_SERVICE = "blobs";
@@ -38,7 +38,6 @@ public class RestUsersServer {
 
             discovery.announce(USER_SERVICE, serverURI);
 
-            URI[] shortURI = discovery.findUrisOf(SHORT_SERVICE, 1);
         } catch (Exception e) {
             Log.severe(e.getMessage());
         }

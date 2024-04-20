@@ -62,7 +62,6 @@ public class RestUsersClient extends RestClient implements Users {
 				.request()
 				.accept(MediaType.APPLICATION_JSON)
 				.delete();
-
 		return super.responseContents(r, Status.OK, new GenericType<User>() {
 		});
 	}

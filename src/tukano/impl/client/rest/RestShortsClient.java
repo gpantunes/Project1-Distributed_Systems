@@ -46,7 +46,6 @@ public class RestShortsClient extends RestClient implements Shorts {
 				.path(shortId)
 				.queryParam(PASSWORD, password)
 				.request()
-				.accept(MediaType.APPLICATION_JSON)
 				.delete();
 		return super.responseContents(r, Status.NO_CONTENT, null);
 	}
@@ -131,7 +130,7 @@ public class RestShortsClient extends RestClient implements Shorts {
 		});
 	}
 
-	@Override
+	/*@Override
 	public Result<Void> deleteFollows(String userId) {
 		Response r = target
 				.path(userId)
@@ -139,6 +138,6 @@ public class RestShortsClient extends RestClient implements Shorts {
 				.accept(MediaType.APPLICATION_JSON)
 				.delete();
 		return super.responseContents(r, Status.NO_CONTENT, null);
-	}
+	}*/
 
 }
